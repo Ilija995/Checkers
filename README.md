@@ -1,2 +1,8 @@
 # Checkers
-OOP2 - 1st team assignment
+1st OOP2 Team Assignment
+
+### Team members:
+- Babic Jela
+- Petric Fedja
+- Stanojkovic Ilija
+- Tomcic Aleksandar
