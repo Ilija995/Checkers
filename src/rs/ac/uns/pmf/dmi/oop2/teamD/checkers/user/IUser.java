@@ -9,6 +9,10 @@ import java.rmi.RemoteException;
  */
 public interface IUser extends Remote, Serializable {
 
+	/**
+	 * Some placeholder comment
+	 * @return
+	 */
 	String getName();
 
 	String getHost();
