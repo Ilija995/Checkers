@@ -8,8 +8,7 @@ import java.rmi.RemoteException;
  * Interface for information about the user and the connection to server
  */
 public interface IUser extends Remote, Serializable {
-
-	/*cmm*/
+	
 	String getName();
 
 	String getHost();
