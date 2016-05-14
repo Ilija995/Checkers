@@ -47,14 +47,18 @@ public class CheckersWindow extends JFrame {
             setBackground(color);
             this.user=user;
         }
+
         public void setPawn(){
         }
+
         public void movePawns(){
 
         }
+
         public void setQueen(){
 
         }
+        
         public void moveQueen(){
 
         }
