@@ -40,5 +40,32 @@ public class User extends UnicastRemoteObject implements IUser {
                 //wnd.makeMove(move);
             }
     }
+    @Override
+    public int hashCode(){
+        final int prost = 31;
+        int rezultat = 1;
+        rezultat = prost * rezultat + host.hashCode();
+        rezultat = prost * rezultat + name.hashCode();
+        return rezultat;
+    }
+    public boolean equals(Object o){
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        IUser other = (IUser) o;
+        if (!getHost().equals(other.getHost())) {
+            return false;
+        }
+        if (!getName().equals(other.getName())) {
+            return false;
+        }
+        return true;
+    }
 
 }
