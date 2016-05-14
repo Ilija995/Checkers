@@ -36,9 +36,29 @@ public class CheckersWindow extends JFrame {
     private UserDb userDb;
 
     private class Field extends JPanel {
-
+        private int x;
+        private int y;
+        private boolean hasQueen;
+        private JLabel label=new JLabel();
+        private IUser user;
         public Field(int x, int y, Color color, IUser user, boolean hasQueen) {
+            this.x=x;
+            this.y=y;
+            setBackground(color);
+            this.user=user;
         }
+        public void setPawn(){
+        }
+        public void movePawns(){
+
+        }
+        public void setQueen(){
+
+        }
+        public void moveQueen(){
+
+        }
+
 
     }
 
