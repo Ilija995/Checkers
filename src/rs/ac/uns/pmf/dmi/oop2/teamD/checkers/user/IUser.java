@@ -22,9 +22,9 @@ public interface IUser extends Remote, Serializable {
 	void onOpponentMove(IUser opponent, String move) throws RemoteException;
 
 	@Override
-	boolean equals(Object anObject) throws RemoteException;
+	boolean equals(Object anObject);
 
 	@Override
-	int hashCode() throws RemoteException;
+	int hashCode();
 
 }

@@ -16,7 +16,7 @@ public interface IUserDb extends Remote {
 	 * @param user
 	 * @throws RemoteException
 	 */
-	void add(IUser user) throws RemoteException;
+	boolean add(IUser user) throws RemoteException;
 
 	/**
 	 * Removes user in case one decides to quit.

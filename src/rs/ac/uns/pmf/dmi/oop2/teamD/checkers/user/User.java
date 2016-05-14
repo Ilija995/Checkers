@@ -45,14 +45,16 @@ public class User extends UnicastRemoteObject implements IUser {
             }
     }
     @Override
-    public int hashCode(){
+    public int hashCode() {
         final int prost = 31;
         int rezultat = 1;
         rezultat = prost * rezultat + getHost().hashCode();
         rezultat = prost * rezultat + getName().hashCode();
         return rezultat;
     }
-    public boolean equals(Object o){
+
+    @Override
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }

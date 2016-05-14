@@ -1,8 +1,10 @@
 package rs.ac.uns.pmf.dmi.oop2.teamD.checkers.server;
 
+import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.RegistryManager;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.user.IUser;
 
 import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +21,13 @@ public class UserDb extends UnicastRemoteObject implements IUserDb {
         users=new ArrayList<>();
     }
     @Override
-    public void add(IUser user) throws RemoteException {
+    public boolean add(IUser user) throws RemoteException {
         if(users.size()<=1){
             users.add(user);
-        } else System.out.println("Only two players allowed per game");
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -51,7 +56,15 @@ public class UserDb extends UnicastRemoteObject implements IUserDb {
             }
         }
     }
-    /*public List<UserInfo> get() throws RemoteException {
-            return users;
-    }*/
+
+    public static void main(String[] args) {
+        try {
+            Registry reg = RegistryManager.get();
+            reg.rebind(UserDb.RMI_NAME, new UserDb());
+            System.out.println("User DB ready...");
+        } catch (RemoteException ex) {
+            ex.printStackTrace();
+        }
+
+    }
 }
