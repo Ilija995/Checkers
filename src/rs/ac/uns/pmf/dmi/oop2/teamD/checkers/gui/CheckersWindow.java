@@ -26,9 +26,12 @@ public class CheckersWindow extends JFrame {
 
     private static final Logger logger = Logger.getLogger(CheckersWindow.class.getName());
 
+<<<<<<< HEAD
     private static final int NUM_BTN = 100;
 
     private JButton[] fields;
+=======
+>>>>>>> 6dd44803502a0272c4197bbc1c18bfee3a9b5536
     private Field[][] board = new Field[10][10];
     private Icon bluePawn;
     private Icon orangePawn;
@@ -129,8 +132,97 @@ public class CheckersWindow extends JFrame {
     }
 
     private void initTable() {
+    private void initTable(IUser user) {
+
         getContentPane().removeAll();
         setLayout(new GridLayout(10, 10));
+        JPanel panel = new JPanel(new GridLayout(10, 10));
+
+        for (int i = 0; i < 10; i++) {
+            if (i % 2 == 0) {
+                board[0][i] = new Field(0, i, Color.ORANGE, user, false, false);
+            } else {
+                board[0][i] = new Field(0, i, Color.BLUE, user, true, true);
+            }
+            panel.add(board[0][i]);
+        }
+
+        for (int i = 0; i < 10; i++) {
+            if (i % 2 == 0) {
+                board[1][i] = new Field(1, i, Color.BLUE, user, true, true);
+            } else {
+                board[1][i] = new Field(1, i, Color.ORANGE, user, false, false);
+            }
+            panel.add(board[1][i]);
+        }
+
+        for (int i = 0; i < 10; i++) {
+            if (i % 2 == 0) {
+                board[2][i] = new Field(2, i, Color.ORANGE, user, false, false);
+            } else {
+                board[2][i] = new Field(2, i, Color.BLUE, user, true, true);
+            }
+            panel.add(board[2][i]);
+        }
+
+        for (int i = 0; i < 10; i++) {
+            if (i % 2 == 0) {
+                board[3][i] = new Field(3, i, Color.BLUE, user, true, true);
+            } else {
+                board[3][i] = new Field(3, i, Color.ORANGE, user, false, false);
+            }
+            panel.add(board[3][i]);
+        }
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                boolean isOrange = (i + j) % 2 == 0;
+                if (isOrange) {
+                    board[i + 4][j] = new Field((i + 4), j, Color.ORANGE, user, false, false);
+                } else {
+                    board[i + 4][j] = new Field((i + 4), j, Color.BLUE, user, false, false);
+                }
+                panel.add(board[i + 4][j]);
+            }
+        }
+
+        for (int i = 0; i < 10; i++) {
+            if (i % 2 == 0) {
+                board[6][i] = new Field(6, i, Color.ORANGE, user, false, false);
+            } else {
+                board[6][i] = new Field(6, i, Color.BLUE, user, true, false);
+            }
+            panel.add(board[6][i]);
+        }
+
+        for (int i = 0; i < 10; i++) {
+            if (i % 2 == 0) {
+                board[7][i] = new Field(7, i, Color.BLUE, user, true, false);
+            } else {
+                board[7][i] = new Field(7, i, Color.ORANGE, user, false, false);
+            }
+            panel.add(board[7][i]);
+        }
+
+        for (int i = 0; i < 10; i++) {
+            if (i % 2 == 0) {
+                board[8][i] = new Field(8, i, Color.ORANGE, user, false, false);
+            } else {
+                board[8][i] = new Field(8, i, Color.BLUE, user, true, false);
+            }
+            panel.add(board[8][i]);
+        }
+
+        for (int i = 0; i < 10; i++) {
+            if (i % 2 == 0) {
+                board[9][i] = new Field(9, i, Color.BLUE, user, true, false);
+            } else {
+                board[9][i] = new Field(9, i, Color.ORANGE, user, false, false);
+            }
+            panel.add(board[9][i]);
+        }
+
+        getContentPane().add(panel);
 
         fields = new JButton[NUM_BTN];
 
