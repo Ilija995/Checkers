@@ -26,12 +26,6 @@ public class CheckersWindow extends JFrame {
 
     private static final Logger logger = Logger.getLogger(CheckersWindow.class.getName());
 
-<<<<<<< HEAD
-    private static final int NUM_BTN = 100;
-
-    private JButton[] fields;
-=======
->>>>>>> 6dd44803502a0272c4197bbc1c18bfee3a9b5536
     private Field[][] board = new Field[10][10];
     private Icon bluePawn;
     private Icon orangePawn;
@@ -45,23 +39,63 @@ public class CheckersWindow extends JFrame {
         private int x;
         private int y;
         private boolean hasQueen;
-        private JLabel label=new JLabel();
+        private boolean hasPawn;
+        private JLabel label = new JLabel();
         private IUser user;
-        public Field(int x, int y, Color color, IUser user, boolean hasQueen) {
-            this.x=x;
-            this.y=y;
+
+        public Field(int x, int y, Color color, IUser user, boolean hasPawn, boolean isBluePawn) {
+            this.x = x;
+            this.y = y;
             setBackground(color);
-            this.user=user;
+            add(label);
+            this.user = user;
+
+            if (hasPawn && isBluePawn) {
+                setBluePawn();
+            }
+            else if (hasPawn && !isBluePawn) {
+                setOrangePawn();
+            }
+
+            if (hasPawn) {
+                addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        movePawn();
+                    }
+                });
+            }
+            else if (hasQueen) {
+                addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        moveQueen();
+                    }
+                });
+            }
         }
-        public void setPawn(){
+
+        public void setBluePawn(){
+            label.setIcon(bluePawn);
         }
-        public void movePawns(){
+
+        public void setOrangePawn() {
+            label.setIcon(orangePawn);
+        }
+
+        private void movePawn(){
 
         }
-        public void setQueen(){
 
+        public void setBlueQueen(){
+            label.setIcon(blueQueen);
         }
-        public void moveQueen(){
+
+        public void setOrangeQueen() {
+            label.setIcon(orangeQueen);
+        }
+
+        private void moveQueen(){
 
         }
 
@@ -117,7 +151,7 @@ public class CheckersWindow extends JFrame {
                     return;
                 }
 
-                initTable();
+                initTable(user);
 
             } catch (RemoteException ex) {
                 reportError("Cannot create User object", true, ex);
@@ -131,7 +165,7 @@ public class CheckersWindow extends JFrame {
         add(panel1, BorderLayout.NORTH);
     }
 
-    private void initTable() {
+
     private void initTable(IUser user) {
 
         getContentPane().removeAll();
@@ -224,7 +258,6 @@ public class CheckersWindow extends JFrame {
 
         getContentPane().add(panel);
 
-        fields = new JButton[NUM_BTN];
 
     }
 
