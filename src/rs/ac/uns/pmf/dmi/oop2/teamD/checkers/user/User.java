@@ -2,6 +2,8 @@ package rs.ac.uns.pmf.dmi.oop2.teamD.checkers.user;
 import java.awt.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.gui.CheckersWindow;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.server.UserDb;
 
@@ -36,8 +38,10 @@ public class User extends UnicastRemoteObject implements IUser {
     public void onOpponentMove(IUser opponent, String move) throws RemoteException {
             if(move.startsWith("quit")){
                 //wnd.onMessage("player "+opponent.getName()+"has quit the game,you win");
-            }else{
+            }else if(move.startsWith("move")){
                 //wnd.makeMove(move);
+            }else{
+                throw new IllegalArgumentException("Invalid command");
             }
     }
     @Override
