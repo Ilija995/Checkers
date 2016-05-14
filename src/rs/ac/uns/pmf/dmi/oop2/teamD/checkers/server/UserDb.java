@@ -12,10 +12,7 @@ public class UserDb extends UnicastRemoteObject implements IUserDb {
 
 
     private static final long serialVersionUID = 2513243613133876083L;
-<<<<<<< HEAD
-=======
 
->>>>>>> 7deaf2d4a402478c2013ea45737ca04b9a65e9e3
     private final List<IUser> users;
 
     protected UserDb() throws RemoteException{
@@ -37,16 +34,13 @@ public class UserDb extends UnicastRemoteObject implements IUserDb {
 
     @Override
     public IUser getOpponent(IUser user) throws RemoteException {
-<<<<<<< HEAD
+
         for(IUser t:users){
             if(!t.equals(user)){
                 return t;
             }
         }
         return null;
-=======
-        throw new UnsupportedOperationException();
->>>>>>> 7deaf2d4a402478c2013ea45737ca04b9a65e9e3
     }
 
     @Override
