@@ -7,6 +7,8 @@ import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.user.User;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -26,7 +28,7 @@ public class CheckersWindow extends JFrame {
 
     private static final int NUM_BTN = 100;
 
-    private JButton[] fields;
+    private Field[][] board = new Field[10][10];
     private Icon bluePawn;
     private Icon orangePawn;
     private Icon blueQueen;
@@ -38,27 +40,66 @@ public class CheckersWindow extends JFrame {
     private class Field extends JPanel {
         private int x;
         private int y;
+        private boolean hasPawn;
         private boolean hasQueen;
-        private JLabel label=new JLabel();
+        private JLabel label = new JLabel();
         private IUser user;
-        public Field(int x, int y, Color color, IUser user, boolean hasQueen) {
-            this.x=x;
-            this.y=y;
+
+        public Field(int x, int y, Color color, IUser user, boolean hasPawn, boolean isBluePawn) {
+            this.x = x;
+            this.y = y;
             setBackground(color);
-            this.user=user;
+            add(label);
+            this.user = user;
+
+            if (hasPawn && isBluePawn) {
+                setBluePawn();
+            }
+            else if (hasPawn && !isBluePawn) {
+                setOrangePawn();
+            }
+
+            if (hasPawn) {
+                addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        movePawn();
+                    }
+                });
+            }
+            else if (hasQueen) {
+                addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        moveQueen();
+                    }
+                });
+            }
         }
-        public void setPawn(){
+
+        public void setBluePawn(){
+            label.setIcon(bluePawn);
         }
-        public void movePawns(){
+
+        public void setOrangePawn() {
+            label.setIcon(orangePawn);
+        }
+
+        private void movePawn(){
 
         }
-        public void setQueen(){
 
-        }
-        public void moveQueen(){
-
+        public void setBlueQueen(){
+            label.setIcon(blueQueen);
         }
 
+        public void setOrangeQueen() {
+            label.setIcon(orangeQueen);
+        }
+
+        private void moveQueen(){
+
+        }
 
     }
 
@@ -130,7 +171,6 @@ public class CheckersWindow extends JFrame {
         getContentPane().removeAll();
         setLayout(new GridLayout(10, 10));
 
-        fields = new JButton[NUM_BTN];
 
     }
 
