@@ -7,6 +7,8 @@ import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.user.User;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -27,6 +29,7 @@ public class CheckersWindow extends JFrame {
     private static final int NUM_BTN = 100;
 
     private JButton[] fields;
+    private Field[][] board = new Field[10][10];
     private Icon bluePawn;
     private Icon orangePawn;
     private Icon blueQueen;
