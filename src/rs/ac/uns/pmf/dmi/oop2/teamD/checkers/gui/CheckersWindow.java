@@ -2,6 +2,7 @@ package rs.ac.uns.pmf.dmi.oop2.teamD.checkers.gui;
 
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.RegistryManager;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.server.UserDb;
+import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.user.IUser;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.user.User;
 
 import javax.swing.*;
@@ -51,7 +52,7 @@ public class CheckersWindow extends JFrame {
         setLayout(new BorderLayout());
         JPanel panel1 = new JPanel();
 
-        label = new JLabel("Unos imena: ");
+        label = new JLabel("Enter your name: ");
         txt = new JTextField(30);
 
         JButton logIn = new JButton("LogIn");
@@ -65,7 +66,7 @@ public class CheckersWindow extends JFrame {
                 String name = txt.getText();
 
                 Registry reg = RegistryManager.get();
-                User user = new User(CheckersWindow.this);
+                IUser user = new User(CheckersWindow.this, name, host);
 
                 reg.rebind(name, user);
 
