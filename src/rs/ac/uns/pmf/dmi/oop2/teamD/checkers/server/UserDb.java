@@ -1,8 +1,6 @@
 package rs.ac.uns.pmf.dmi.oop2.teamD.checkers.server;
 
-import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.gui.CheckersWindow;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.user.IUser;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -16,7 +14,8 @@ public class UserDb extends UnicastRemoteObject implements IUserDb {
 
 
     private static final long serialVersionUID = 2513243613133876083L;
-    private final List<IUser> users;/*jel ova lista treba da bude <UserInfo> ili <IUser>*/
+
+    private final List<IUser> users;
 
     protected UserDb() throws RemoteException{
         users=new ArrayList<>();
@@ -36,7 +35,7 @@ public class UserDb extends UnicastRemoteObject implements IUserDb {
 
     @Override
     public IUser getOpponent(IUser user) throws RemoteException {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
