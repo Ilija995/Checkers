@@ -11,7 +11,6 @@ import java.rmi.RemoteException;
 public interface IUserDb extends Remote {
 	
 	String RMI_NAME = "UserDb";
-
 	/**
 	 * Adds new user. Max number of users is 2.
 	 * @param user
@@ -34,4 +33,5 @@ public interface IUserDb extends Remote {
 	 * @throws RemoteException
 	 */
 	void send(IUser sender, String message) throws RemoteException;
+
 }

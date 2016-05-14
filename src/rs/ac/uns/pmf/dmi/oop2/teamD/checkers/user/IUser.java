@@ -27,4 +27,5 @@ public interface IUser extends Remote, Serializable {
 	 * @throws RemoteException
 	 */
 	void onOpponentQuit(IUser opponent) throws RemoteException;
+
 }
