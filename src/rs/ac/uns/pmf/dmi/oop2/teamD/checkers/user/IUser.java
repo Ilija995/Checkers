@@ -21,11 +21,10 @@ public interface IUser extends Remote, Serializable {
 	 */
 	void onOpponentMove(IUser opponent, String move) throws RemoteException;
 
-	/**
-	 * Gets notified from the server when the opponent quit
-	 * @param opponent
-	 * @throws RemoteException
-	 */
-	void onOpponentQuit(IUser opponent) throws RemoteException;
+	@Override
+	boolean equals(Object anObject) throws RemoteException;
+
+	@Override
+	int hashCode() throws RemoteException;
 
 }

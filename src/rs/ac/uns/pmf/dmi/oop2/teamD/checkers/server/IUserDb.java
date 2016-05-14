@@ -27,6 +27,14 @@ public interface IUserDb extends Remote {
 	void remove(IUser user) throws RemoteException;
 
 	/**
+	 * Returns the opponent of the passed user
+	 * @param user
+	 * @return
+	 * @throws RemoteException
+	 */
+	IUser getOpponent(IUser user) throws RemoteException;
+
+	/**
 	 * Sends message to other players
 	 * @param sender
 	 * @param message
