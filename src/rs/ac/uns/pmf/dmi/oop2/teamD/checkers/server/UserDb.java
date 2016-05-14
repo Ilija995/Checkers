@@ -35,7 +35,12 @@ public class UserDb extends UnicastRemoteObject implements IUserDb {
 
     @Override
     public IUser getOpponent(IUser user) throws RemoteException {
-        throw new NotImplementedException();
+        for(IUser t:users){
+            if(!t.equals(user)){
+                return t;
+            }
+        }
+        return null;
     }
 
     @Override

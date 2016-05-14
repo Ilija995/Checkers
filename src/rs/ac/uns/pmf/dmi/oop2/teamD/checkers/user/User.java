@@ -34,11 +34,11 @@ public class User extends UnicastRemoteObject implements IUser {
 
     @Override
     public void onOpponentMove(IUser opponent, String move) throws RemoteException {
-
+            if(move.startsWith("quit")){
+                //wnd.onMessage("player "+opponent.getName()+"has quit the game,you win");
+            }else{
+                //wnd.makeMove(move);
+            }
     }
 
-    @Override
-    public void onOpponentQuit(IUser opponent) throws RemoteException {
-            /*userss.remove(opponent);*/
-    }
 }
