@@ -5,29 +5,31 @@ import java.rmi.server.UnicastRemoteObject;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.gui.CheckersWindow;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.server.UserDb;
 
-/**
- * Created by UserPC on 14.05.2016..
- */
+
 public class User extends UnicastRemoteObject implements IUser {
 
     private static final long serialVersionUID = -3991786196885452079L;
 
     private CheckersWindow wnd;
+    private String name;
+    private String host;
     /*private UserDb userss;*/
 
-    public User(CheckersWindow wnd) throws RemoteException {
+    public User(CheckersWindow wnd,String name,String host) throws RemoteException {
         this.wnd = wnd;
+        this.name=name;
+        this.host=host;
     }
 
 
     @Override
     public String getName() {
-        return null;
+        return name;
     }
 
     @Override
     public String getHost() {
-        return null;
+        return host;
     }
 
     @Override

@@ -8,14 +8,12 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by UserPC on 14.05.2016..
- */
+
 public class UserDb extends UnicastRemoteObject implements IUserDb {
 
 
     private static final long serialVersionUID = 2513243613133876083L;
-    private final List<IUser> users;/*jel ova lista treba da bude <UserInfo> ili <IUser>*/
+    private final List<IUser> users;
 
     protected UserDb() throws RemoteException{
         users=new ArrayList<>();
@@ -24,19 +22,23 @@ public class UserDb extends UnicastRemoteObject implements IUserDb {
     public void add(IUser user) throws RemoteException {
         if(users.size()<=1){
             users.add(user);
-        } else System.out.println("Maksimalno 2 igraca");
+        } else System.out.println("Only two players allowed per game");
     }
 
     @Override
     public void remove(IUser user) throws RemoteException {
         users.remove(user);
-        send(user,"protivnik je napustio igru");
+        send(user,"quit");
+
     }
 
     @Override
     public void send(IUser sender, String message) throws RemoteException {
-        /*CheckersWindow.opponentExited(sender,message);
-        * User.onMeassage(sender,message)*/
+       for(IUser t:users){
+            if(!t.equals(sender)){
+                t.onOpponentMove(sender,message);
+            }
+        }
     }
     /*public List<UserInfo> get() throws RemoteException {
             return users;
