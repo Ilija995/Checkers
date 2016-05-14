@@ -65,7 +65,7 @@ public class CheckersWindow extends JFrame {
         setLayout(new BorderLayout());
         JPanel panel1 = new JPanel();
 
-        label = new JLabel("Unos imena: ");
+        label = new JLabel("Enter your name: ");
         txt = new JTextField(30);
 
         JButton logIn = new JButton("LogIn");
@@ -79,7 +79,7 @@ public class CheckersWindow extends JFrame {
                 String name = txt.getText();
 
                 Registry reg = RegistryManager.get();
-                User user = new User(CheckersWindow.this, name, host);
+                IUser user = new User(CheckersWindow.this, name, host);
                 reg.rebind(name, user);
 
                 if(!userDb.add(user)) {
