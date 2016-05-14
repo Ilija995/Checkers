@@ -44,8 +44,8 @@ public class User extends UnicastRemoteObject implements IUser {
     public int hashCode(){
         final int prost = 31;
         int rezultat = 1;
-        rezultat = prost * rezultat + host.hashCode();
-        rezultat = prost * rezultat + name.hashCode();
+        rezultat = prost * rezultat + getHost().hashCode();
+        rezultat = prost * rezultat + getName().hashCode();
         return rezultat;
     }
     public boolean equals(Object o){
