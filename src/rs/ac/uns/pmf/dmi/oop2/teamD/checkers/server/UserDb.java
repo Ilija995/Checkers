@@ -2,6 +2,7 @@ package rs.ac.uns.pmf.dmi.oop2.teamD.checkers.server;
 
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.gui.CheckersWindow;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.user.IUser;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -30,6 +31,11 @@ public class UserDb extends UnicastRemoteObject implements IUserDb {
         users.remove(user);
         send(user,"quit");
 
+    }
+
+    @Override
+    public IUser getOpponent(IUser user) throws RemoteException {
+        throw new NotImplementedException();
     }
 
     @Override
