@@ -9,7 +9,7 @@ import java.rmi.RemoteException;
  * Interface for user database and a service for sending messages between users
  */
 public interface IUserDb extends Remote {
-
+	/*samo da vidim jel funskcionise ovo*/
 	String RMI_NAME = "UserDb";
 
 	/**
