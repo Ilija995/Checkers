@@ -34,6 +34,7 @@ public class CheckersWindow extends JFrame {
     private JTextField txt;
     private JLabel label;
     private UserDb userDb;
+    private Field selectedField;
 
     private class Field extends JPanel {
         private int x;
@@ -63,7 +64,12 @@ public class CheckersWindow extends JFrame {
                 addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        movePawn();
+                        if(selectedField==null && !isBluePawn) {
+                            selectedField=board[x][y];
+                            movePawn();
+                        }
+                        else if(selectedField!=null)
+                            movePawn();
                     }
                 });
             }
@@ -97,6 +103,7 @@ public class CheckersWindow extends JFrame {
             label.setIcon(orangePawn);
         }
 
+
         private void movePawn(){
             boolean [][] freeFields=freeFields();
             if(x-1<0 || y+1>10){
@@ -129,47 +136,53 @@ public class CheckersWindow extends JFrame {
                 });
             }
             else if(!freeRight &&  freeFields[x+2][y+1] && x+2<10 && y+1<10) {
-                while (!freeRight && freeFields[x + 2][y + 1]&& x+2<10 && y+1<10) {
-                    board[x + 2][y + 1].addMouseListener(new MouseAdapter() {
-                        @Override
-                        public void mouseClicked(MouseEvent e) {
-                            right.removeIcon();
-                            if (isBluePawn)
-                                setBluePawn();
-                            else
-                                setOrangePawn();
-                        }
-                    });
-                }
+               rightJump(freeRight,freeFields,right);
             }
 
 
             else if(!freeLeft && freeFields[x-2][y+1] && x-2>0 && y+1<10) {
-                while (!freeLeft && freeFields[x - 2][y + 1]&& x-2>0 && y+1<10) {
-                    board[x - 2][y + 1].addMouseListener(new MouseAdapter() {
-                        @Override
-                        public void mouseClicked(MouseEvent e) {
-                            left.removeIcon();
-                            if (isBluePawn)
-                                setBluePawn();
-                            else
-                                setOrangePawn();
-                        }
-                    });
-                }
+                leftJump(freeLeft,freeFields,left);
             }
 
 
         }
 
-        public boolean setBlueQueen(){
-            label.setIcon(blueQueen);
-            return true;
+        public void rightJump(boolean freeRight, boolean[][]freeFields, Field right){
+            while (!freeRight && freeFields[x + 2][y + 1]&& x+2<10 && y+1<10) {
+                board[x + 2][y + 1].addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        right.removeIcon();
+                        if (isBluePawn)
+                            setBluePawn();
+                        else
+                            setOrangePawn();
+                    }
+                });
+            }
         }
 
-        public boolean setOrangeQueen() {
+        public void leftJump(boolean freeLeft, boolean[][]freeFields, Field left){
+            while (!freeLeft && freeFields[x - 2][y + 1]&& x-2>0 && y+1<10) {
+                board[x - 2][y + 1].addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        left.removeIcon();
+                        if (isBluePawn)
+                            setBluePawn();
+                        else
+                            setOrangePawn();
+                    }
+                });
+            }
+        }
+
+        public void setBlueQueen(){
+            label.setIcon(blueQueen);
+        }
+
+        public void setOrangeQueen() {
             label.setIcon(orangeQueen);
-            return true;
         }
 
         private void moveQueen(){
