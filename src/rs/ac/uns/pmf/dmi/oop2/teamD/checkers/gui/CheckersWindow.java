@@ -40,6 +40,7 @@ public class CheckersWindow extends JFrame {
         private int y;
         private boolean hasQueen;
         private boolean hasPawn;
+        private boolean isBluePawn;
         private JLabel label = new JLabel();
         private IUser user;
 
@@ -49,6 +50,7 @@ public class CheckersWindow extends JFrame {
             setBackground(color);
             add(label);
             this.user = user;
+            this.isBluePawn=isBluePawn;
 
             if (hasPawn && isBluePawn) {
                 setBluePawn();
@@ -74,6 +76,18 @@ public class CheckersWindow extends JFrame {
                 });
             }
         }
+        public boolean[][] freeFields(){
+            boolean [][] emptyFields=new boolean[][];
+            for(int i=0; i<10;i++) {
+                for (int j = 0; j < 10; j++) {
+                    if (!board[i][j].hasPawn && !board[i][j].hasQueen)
+                        emptyFields[i][j]=true;
+                    else
+                        emptyFields[i][j]=false;
+                }
+            }
+            return emptyFields;
+        }
 
         public void setBluePawn(){
             label.setIcon(bluePawn);
@@ -84,19 +98,77 @@ public class CheckersWindow extends JFrame {
         }
 
         private void movePawn(){
+            boolean [][] freeFields=freeFields();
+            Field right = board[x-1][y+1];
+            Field left = board[x+1][y+1];
+            boolean freeRight = !right.hasPawn;
+            boolean freeLeft = !left.hasPawn;
+            if(freeRight) {
+                right.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        if (isBluePawn) {
+                            setBluePawn();
+                        } else if (!isBluePawn)
+                            setOrangePawn();
+                    }
+                });
+            }
+            else if(freeLeft) {
+                left.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        if (isBluePawn)
+                            setBluePawn();
+                        else if (!isBluePawn)
+                            setOrangePawn();
+                    }
+                });
+            }
+            else if(!freeRight && freeFields[x+2][y+1]){
+                board[x+2][y+1].addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        right.removeIcon();
+                        if(isBluePawn)
+                            setBluePawn();
+                        else
+                            setOrangePawn();
+                    }
+                });
+            }
+            else if(!freeLeft && freeFields[x-2][y+1]){
+                board[x-2][y+1].addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        left.removeIcon();
+                        if(isBluePawn)
+                            setBluePawn();
+                        else
+                            setOrangePawn();
+                    }
+                });
+            }
+
 
         }
 
-        public void setBlueQueen(){
+        public boolean setBlueQueen(){
             label.setIcon(blueQueen);
+            return true;
         }
 
-        public void setOrangeQueen() {
+        public boolean setOrangeQueen() {
             label.setIcon(orangeQueen);
+            return true;
         }
 
         private void moveQueen(){
 
+        }
+
+        public void removeIcon(){
+            label.setIcon(null);
         }
 
     }
