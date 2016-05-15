@@ -99,6 +99,9 @@ public class CheckersWindow extends JFrame {
 
         private void movePawn(){
             boolean [][] freeFields=freeFields();
+            if(x-1<0 || y+1>10){
+                return;
+            }
             Field right = board[x-1][y+1];
             Field left = board[x+1][y+1];
             boolean freeRight = !right.hasPawn;
@@ -125,29 +128,35 @@ public class CheckersWindow extends JFrame {
                     }
                 });
             }
-            else if(!freeRight && freeFields[x+2][y+1]){
-                board[x+2][y+1].addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        right.removeIcon();
-                        if(isBluePawn)
-                            setBluePawn();
-                        else
-                            setOrangePawn();
-                    }
-                });
+            else if(!freeRight &&  freeFields[x+2][y+1] && x+2<10 && y+1<10) {
+                while (!freeRight && freeFields[x + 2][y + 1]&& x+2<10 && y+1<10) {
+                    board[x + 2][y + 1].addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                            right.removeIcon();
+                            if (isBluePawn)
+                                setBluePawn();
+                            else
+                                setOrangePawn();
+                        }
+                    });
+                }
             }
-            else if(!freeLeft && freeFields[x-2][y+1]){
-                board[x-2][y+1].addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        left.removeIcon();
-                        if(isBluePawn)
-                            setBluePawn();
-                        else
-                            setOrangePawn();
-                    }
-                });
+
+
+            else if(!freeLeft && freeFields[x-2][y+1] && x-2>0 && y+1<10) {
+                while (!freeLeft && freeFields[x - 2][y + 1]&& x-2>0 && y+1<10) {
+                    board[x - 2][y + 1].addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                            left.removeIcon();
+                            if (isBluePawn)
+                                setBluePawn();
+                            else
+                                setOrangePawn();
+                        }
+                    });
+                }
             }
 
 
