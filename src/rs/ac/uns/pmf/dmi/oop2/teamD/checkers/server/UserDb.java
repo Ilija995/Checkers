@@ -21,13 +21,16 @@ public class UserDb extends UnicastRemoteObject implements IUserDb {
         users=new ArrayList<>();
     }
     @Override
-    public boolean add(IUser user) throws RemoteException {
-        if(users.size()<=1){
+    public int add(IUser user) throws RemoteException {
+        if(users.size() <= 1){
+            for (IUser u : users) {
+            }
+
             users.add(user);
-            return true;
+            return users.size();
         }
 
-        return false;
+        return -1;
     }
 
     @Override

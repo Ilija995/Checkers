@@ -21,6 +21,8 @@ public interface IUser extends Remote, Serializable {
 	 */
 	void onOpponentMove(IUser opponent, String move) throws RemoteException;
 
+	void onOpponentConnect(IUser user) throws RemoteException;
+
 	@Override
 	boolean equals(Object anObject);
 

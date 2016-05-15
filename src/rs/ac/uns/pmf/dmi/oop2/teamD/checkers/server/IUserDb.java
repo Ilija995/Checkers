@@ -11,12 +11,14 @@ import java.rmi.RemoteException;
 public interface IUserDb extends Remote {
 	
 	String RMI_NAME = "UserDb";
+
 	/**
 	 * Adds new user. Max number of users is 2.
 	 * @param user
+	 * @return Returns the ordinal number of a player. If number of players exceeded, returns -1.
 	 * @throws RemoteException
 	 */
-	boolean add(IUser user) throws RemoteException;
+	int add(IUser user) throws RemoteException;
 
 	/**
 	 * Removes user in case one decides to quit.

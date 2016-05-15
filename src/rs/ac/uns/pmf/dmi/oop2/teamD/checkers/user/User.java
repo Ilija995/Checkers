@@ -15,7 +15,6 @@ public class User extends UnicastRemoteObject implements IUser {
     private CheckersWindow wnd;
     private String name;
     private String host;
-    /*private UserDb userss;*/
 
     public User(CheckersWindow wnd,String name,String host) throws RemoteException {
         this.wnd = wnd;
@@ -36,16 +35,24 @@ public class User extends UnicastRemoteObject implements IUser {
 
     @Override
     public void onOpponentMove(IUser opponent, String move) throws RemoteException {
-            if(move.startsWith("quit")){
-                //wnd.onMessage("player "+opponent.getName()+"has quit the game,you win");
-            }else if(move.startsWith("move")){
-                //wnd.makeMove(move);
-            }else{
-                throw new IllegalArgumentException("Invalid command");
-            }
+        switch (move.substring(0, move.indexOf(' '))) {
+            case "quit":
+                EventQueue.invokeLater(() -> wnd.onOpponentQuit());
+                break;
+            case "select":case "move":case "final":
+                EventQueue.invokeLater(() -> wnd.onOpponentMove(move));
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid move string");
+        }
     }
-    @Override
 
+    @Override
+    public void onOpponentConnect(IUser user) throws RemoteException {
+        EventQueue.invokeLater(() -> wnd.initMain(user));
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int ret = 1;

@@ -1,15 +1,13 @@
 package rs.ac.uns.pmf.dmi.oop2.teamD.checkers.gui;
 
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.RegistryManager;
+import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.server.IUserDb;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.server.UserDb;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.user.IUser;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.user.User;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
@@ -21,186 +19,17 @@ import java.util.logging.Logger;
  * Our checkers game window
  * Apart from creating and maintaining gui it responds when other player sends his move
  */
-
 public class CheckersWindow extends JFrame {
 
     private static final Logger logger = Logger.getLogger(CheckersWindow.class.getName());
 
-    private Field[][] board = new Field[10][10];
-    private Icon bluePawn;
-    private Icon orangePawn;
-    private Icon blueQueen;
-    private Icon orangeQueen;
     private JTextField txt;
     private JLabel label;
-    private UserDb userDb;
-    private Field selectedField;
-
-    private class Field extends JPanel {
-        private int x;
-        private int y;
-        private boolean hasQueen;
-        private boolean hasPawn;
-        private boolean isBluePawn;
-        private JLabel label = new JLabel();
-        private IUser user;
-
-        public Field(int x, int y, Color color, IUser user, boolean hasPawn, boolean isBluePawn) {
-            this.x = x;
-            this.y = y;
-            setBackground(color);
-            add(label);
-            this.user = user;
-            this.isBluePawn=isBluePawn;
-
-            if (hasPawn && isBluePawn) {
-                setBluePawn();
-            }
-            else if (hasPawn && !isBluePawn) {
-                setOrangePawn();
-            }
-
-            if (hasPawn) {
-                addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        if(selectedField==null && !isBluePawn) {
-                            selectedField=board[x][y];
-                            movePawn();
-                        }
-                        else if(selectedField!=null)
-                            movePawn();
-                    }
-                });
-            }
-            else if (hasQueen) {
-                addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        moveQueen();
-                    }
-                });
-            }
-        }
-        public boolean[][] freeFields(){
-            boolean [][] emptyFields=new boolean[][];
-            for(int i=0; i<10;i++) {
-                for (int j = 0; j < 10; j++) {
-                    if (!board[i][j].hasPawn && !board[i][j].hasQueen)
-                        emptyFields[i][j]=true;
-                    else
-                        emptyFields[i][j]=false;
-                }
-            }
-            return emptyFields;
-        }
-
-        public void setBluePawn(){
-            label.setIcon(bluePawn);
-        }
-
-        public void setOrangePawn() {
-            label.setIcon(orangePawn);
-        }
-
-
-        private void movePawn(){
-            boolean [][] freeFields=freeFields();
-            if(x-1<0 || y+1>10){
-                return;
-            }
-            Field right = board[x-1][y+1];
-            Field left = board[x+1][y+1];
-            boolean freeRight = !right.hasPawn;
-            boolean freeLeft = !left.hasPawn;
-            if(freeRight) {
-                right.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        if (isBluePawn) {
-                            setBluePawn();
-                        } else if (!isBluePawn)
-                            setOrangePawn();
-                    }
-                });
-            }
-            else if(freeLeft) {
-                left.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        if (isBluePawn)
-                            setBluePawn();
-                        else if (!isBluePawn)
-                            setOrangePawn();
-                    }
-                });
-            }
-            else if(!freeRight &&  freeFields[x+2][y+1] && x+2<10 && y+1<10) {
-               rightJump(freeRight,freeFields,right);
-            }
-
-
-            else if(!freeLeft && freeFields[x-2][y+1] && x-2>0 && y+1<10) {
-                leftJump(freeLeft,freeFields,left);
-            }
-
-
-        }
-
-        public void rightJump(boolean freeRight, boolean[][]freeFields, Field right){
-            while (!freeRight && freeFields[x + 2][y + 1]&& x+2<10 && y+1<10) {
-                board[x + 2][y + 1].addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        right.removeIcon();
-                        if (isBluePawn)
-                            setBluePawn();
-                        else
-                            setOrangePawn();
-                    }
-                });
-            }
-        }
-
-        public void leftJump(boolean freeLeft, boolean[][]freeFields, Field left){
-            while (!freeLeft && freeFields[x - 2][y + 1]&& x-2>0 && y+1<10) {
-                board[x - 2][y + 1].addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        left.removeIcon();
-                        if (isBluePawn)
-                            setBluePawn();
-                        else
-                            setOrangePawn();
-                    }
-                });
-            }
-        }
-
-        public void setBlueQueen(){
-            label.setIcon(blueQueen);
-        }
-
-        public void setOrangeQueen() {
-            label.setIcon(orangeQueen);
-        }
-
-        private void moveQueen(){
-
-        }
-
-        public void removeIcon(){
-            label.setIcon(null);
-        }
-
-    }
-
+    private Board board;
+    private IUserDb userDb;
+    private IUser me;
 
     public CheckersWindow(String dbHost) {
-        bluePawn = new ImageIcon("res\\blue.png");
-        orangePawn = new ImageIcon("res\\orange.png");
-        blueQueen = new ImageIcon("res\\blueQ.png");
-        orangeQueen = new ImageIcon("res\\orangeQ.png");
 
         try {
             userDb = (UserDb) RegistryManager.get(dbHost).lookup(UserDb.RMI_NAME);
@@ -208,11 +37,11 @@ public class CheckersWindow extends JFrame {
             reportError("Initialization error.", true, ex);
         }
 
-        logInScreen();
-
+        showLoginScreen();
+        this.board = new Board(userDb, CheckersWindow.this);
     }
 
-    private void logInScreen() {
+    private void showLoginScreen() {
 
         getContentPane().removeAll();
         setLayout(new BorderLayout());
@@ -232,10 +61,12 @@ public class CheckersWindow extends JFrame {
                 String name = txt.getText();
 
                 Registry reg = RegistryManager.get();
-                IUser user = new User(CheckersWindow.this, name, host);
-                reg.rebind(name, user);
+                me = new User(CheckersWindow.this, name, host);
+                reg.rebind(name, me);
 
-                if(!userDb.add(user)) {
+                // Add me to database
+                int playerOrdNum = userDb.add(me);
+                if(playerOrdNum == -1) {
                     JOptionPane.showMessageDialog(this,
                             "Two players already play on this host",
                             "Occupied host",
@@ -245,7 +76,13 @@ public class CheckersWindow extends JFrame {
                     return;
                 }
 
-                initTable(user);
+                if (playerOrdNum == 1) {
+                    showWaitScreen();
+                }
+                else {
+                    initMain(me);
+                }
+
 
             } catch (RemoteException ex) {
                 reportError("Cannot create User object", true, ex);
@@ -259,103 +96,42 @@ public class CheckersWindow extends JFrame {
         add(panel1, BorderLayout.NORTH);
     }
 
-
-    private void initTable(IUser user) {
-
-        getContentPane().removeAll();
-        setLayout(new GridLayout(10, 10));
-        JPanel panel = new JPanel(new GridLayout(10, 10));
-
-        for (int i = 0; i < 10; i++) {
-            if (i % 2 == 0) {
-                board[0][i] = new Field(0, i, Color.ORANGE, user, false, false);
-            } else {
-                board[0][i] = new Field(0, i, Color.BLUE, user, true, true);
-            }
-            panel.add(board[0][i]);
-        }
-
-        for (int i = 0; i < 10; i++) {
-            if (i % 2 == 0) {
-                board[1][i] = new Field(1, i, Color.BLUE, user, true, true);
-            } else {
-                board[1][i] = new Field(1, i, Color.ORANGE, user, false, false);
-            }
-            panel.add(board[1][i]);
-        }
-
-        for (int i = 0; i < 10; i++) {
-            if (i % 2 == 0) {
-                board[2][i] = new Field(2, i, Color.ORANGE, user, false, false);
-            } else {
-                board[2][i] = new Field(2, i, Color.BLUE, user, true, true);
-            }
-            panel.add(board[2][i]);
-        }
-
-        for (int i = 0; i < 10; i++) {
-            if (i % 2 == 0) {
-                board[3][i] = new Field(3, i, Color.BLUE, user, true, true);
-            } else {
-                board[3][i] = new Field(3, i, Color.ORANGE, user, false, false);
-            }
-            panel.add(board[3][i]);
-        }
-
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                boolean isOrange = (i + j) % 2 == 0;
-                if (isOrange) {
-                    board[i + 4][j] = new Field((i + 4), j, Color.ORANGE, user, false, false);
-                } else {
-                    board[i + 4][j] = new Field((i + 4), j, Color.BLUE, user, false, false);
-                }
-                panel.add(board[i + 4][j]);
-            }
-        }
-
-        for (int i = 0; i < 10; i++) {
-            if (i % 2 == 0) {
-                board[6][i] = new Field(6, i, Color.ORANGE, user, false, false);
-            } else {
-                board[6][i] = new Field(6, i, Color.BLUE, user, true, false);
-            }
-            panel.add(board[6][i]);
-        }
-
-        for (int i = 0; i < 10; i++) {
-            if (i % 2 == 0) {
-                board[7][i] = new Field(7, i, Color.BLUE, user, true, false);
-            } else {
-                board[7][i] = new Field(7, i, Color.ORANGE, user, false, false);
-            }
-            panel.add(board[7][i]);
-        }
-
-        for (int i = 0; i < 10; i++) {
-            if (i % 2 == 0) {
-                board[8][i] = new Field(8, i, Color.ORANGE, user, false, false);
-            } else {
-                board[8][i] = new Field(8, i, Color.BLUE, user, true, false);
-            }
-            panel.add(board[8][i]);
-        }
-
-        for (int i = 0; i < 10; i++) {
-            if (i % 2 == 0) {
-                board[9][i] = new Field(9, i, Color.BLUE, user, true, false);
-            } else {
-                board[9][i] = new Field(9, i, Color.ORANGE, user, false, false);
-            }
-            panel.add(board[9][i]);
-        }
-
-        getContentPane().add(panel);
-
-
+	/**
+     * Show wait window while waiting for other player
+     */
+    private void showWaitScreen() {
+        // TODO: Implement this
     }
 
-    private void reportError(String msg, boolean exit, Throwable throwable) {
+	/**
+     * Method for main window creation
+     * @param secondPlayer Second player in a game
+     */
+    public void initMain(IUser secondPlayer) {
+        if (me.equals(secondPlayer)) {
+            try {
+                board.init(me, userDb.getOpponent(me), false);
+            }
+            catch (RemoteException ex) {
+                reportError("Cannot get opponent from server", true, ex);
+            }
+        }
+        else {
+            board.init(me, secondPlayer, true);
+        }
+
+        // TODO: Implement rest
+    }
+
+    public void onOpponentQuit() {
+        // TODO: Implement this
+    }
+
+    public void onOpponentMove(String move) {
+        // TODO: Implement this
+    }
+
+    public void reportError(String msg, boolean exit, Throwable throwable) {
         logger.log(exit ? Level.SEVERE : Level.WARNING, msg, throwable);
 
         if (exit) {
