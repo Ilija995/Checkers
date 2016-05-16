@@ -23,8 +23,8 @@ public class CheckersWindow extends JFrame {
 
     private static final Logger logger = Logger.getLogger(CheckersWindow.class.getName());
 
-    private JTextField txt;
-    private JLabel label;
+    private JTextField txtUserName;
+    private JLabel lblUserName;
     private Board board;
     private IUserDb userDb;
     private IUser me;
@@ -45,20 +45,20 @@ public class CheckersWindow extends JFrame {
 
         getContentPane().removeAll();
         setLayout(new BorderLayout());
-        JPanel panel1 = new JPanel();
+        JPanel pnlLoginScreen = new JPanel();
 
-        label = new JLabel("Enter your name: ");
-        txt = new JTextField(30);
+        lblUserName = new JLabel("Enter your name: ");
+        txtUserName = new JTextField(30);
 
-        JButton logIn = new JButton("LogIn");
+        JButton btnLogIn = new JButton("LogIn");
 
-        logIn.addActionListener(e -> {
+        btnLogIn.addActionListener(e -> {
             try {
                 String host = System.getProperty("java.rmi.server.hostname");
                 if (host == null) {
                     host = "localhost";
                 }
-                String name = txt.getText();
+                String name = txtUserName.getText();
 
                 Registry reg = RegistryManager.get();
                 me = new User(CheckersWindow.this, name, host);
@@ -89,11 +89,11 @@ public class CheckersWindow extends JFrame {
             }
         });
 
-        panel1.add(label);
-        panel1.add(txt);
-        panel1.add(logIn);
+        pnlLoginScreen.add(lblUserName);
+        pnlLoginScreen.add(txtUserName);
+        pnlLoginScreen.add(btnLogIn);
 
-        add(panel1, BorderLayout.NORTH);
+        add(pnlLoginScreen, BorderLayout.NORTH);
     }
 
 	/**
@@ -101,6 +101,21 @@ public class CheckersWindow extends JFrame {
      */
     private void showWaitScreen() {
         // TODO: Implement this
+
+        getContentPane().removeAll();
+        JPanel pnlWaitScreen = new JPanel();
+        JButton btnQuit = new JButton("Quit");
+
+        btnQuit.addActionListener(e -> {
+            JOptionPane.showMessageDialog(null, "You quit the game!");
+            dispose();
+        });
+
+        pnlWaitScreen.add(btnQuit);
+
+        add(pnlWaitScreen, BorderLayout.SOUTH);
+
+        JOptionPane.showMessageDialog(null, "Waiting for second player");
     }
 
 	/**
