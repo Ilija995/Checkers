@@ -125,10 +125,26 @@ public class CheckersWindow extends JFrame {
 
     public void onOpponentQuit() {
         // TODO: Implement this
+        JOptionPane.showMessageDialog(this, "Your opponent has quit, you win!" + "\nThe game will now exit.");
+        dispose();
     }
 
     public void onOpponentMove(String move) {
         // TODO: Implement this
+        switch(move.substring(0,move.indexOf(' '))){
+            case "select":
+                //setSelected(move.substring(move.indexOf(' ')+1));
+                break;
+            case "move":
+                //doMove(move.substring(move.indexOf(' ')+1));
+                break;
+            case "final":
+                //something...
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid move string");
+
+        }
     }
 
     public void reportError(String msg, boolean exit, Throwable throwable) {
