@@ -138,10 +138,25 @@ public class CheckersWindow extends JFrame {
 
         getContentPane().removeAll();
 
-        // TODO: Implement proper players panel
         JPanel playersPanel = new JPanel();
-        JLabel lblPlayers = new JLabel("Players");
-        playersPanel.add(lblPlayers);
+        JLabel lblBluePlayer = new JLabel();
+        JLabel lblVersus = new JLabel("versus");
+        JLabel lblOrangePlayer = new JLabel();
+
+        try {
+            lblBluePlayer.setBackground(Color.BLUE);
+            lblBluePlayer.setText(me.getName());
+
+            lblOrangePlayer.setBackground(Color.ORANGE);
+            lblOrangePlayer.setText(secondPlayer.getName());
+        } catch (RemoteException re) {
+
+        }
+
+        playersPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        playersPanel.add(lblBluePlayer);
+        playersPanel.add(lblVersus);
+        playersPanel.add(lblOrangePlayer);
 
         setLayout(new BorderLayout());
         add(playersPanel, BorderLayout.NORTH);
