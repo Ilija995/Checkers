@@ -150,7 +150,7 @@ public class CheckersWindow extends JFrame {
 
             lblOrangePlayer.setOpaque(true);
             lblOrangePlayer.setBackground(Color.ORANGE);
-            lblOrangePlayer.setText(secondPlayer.getName());
+            lblOrangePlayer.setText(userDb.getOpponent(me).getName());
         } catch (RemoteException re) {
 
         }
