@@ -93,7 +93,9 @@ class Field extends JPanel {
 				canContinueMove = false;
 			}
 
-			board.setSelectedField(Field.this);
+			if (canContinueMove) {
+				board.setSelectedField(Field.this);
+			}
 			return true;
 		}
 		else if (user != null) {

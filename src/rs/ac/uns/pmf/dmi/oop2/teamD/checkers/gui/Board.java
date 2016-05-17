@@ -18,7 +18,7 @@ class Board extends JPanel {
 	public static final int BOARD_SIZE = 10;
 
 	private CheckersWindow window;
-	private Field[][] board = new Field[10][10];
+	private Field[][] board = new Field[BOARD_SIZE][BOARD_SIZE];
 	private Icon bluePawn;
 	private Icon orangePawn;
 	private Icon blueQueen;
@@ -118,8 +118,9 @@ class Board extends JPanel {
 				}
 				else {
 					int fieldId = (BOARD_SIZE * i + j) / 2 + 1;
-					boolean orangeSide = fieldId <= BOARD_SIZE * (BOARD_SIZE / 2 - 1);
-					boolean blueSide = fieldId > BOARD_SIZE * (BOARD_SIZE / 2 + 1);
+					boolean orangeSide = fieldId <= BOARD_SIZE / 2 * (BOARD_SIZE / 2 - 1);
+					boolean blueSide = fieldId > BOARD_SIZE / 2 * (BOARD_SIZE / 2 + 1);
+
 					board[i][j] = new Field(
 							Board.this,
 							fieldId,
@@ -128,6 +129,7 @@ class Board extends JPanel {
 							orangeSide || blueSide
 					);
 				}
+				add(board[i][j]);
 			}
 		}
 	}

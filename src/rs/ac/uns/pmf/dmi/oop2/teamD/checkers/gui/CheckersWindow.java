@@ -98,8 +98,6 @@ public class CheckersWindow extends JFrame {
      * message in the centre and Quit button at the bottom.
      */
     private void showWaitScreen() {
-        // TODO: Implement this
-
         getContentPane().removeAll();
         JPanel pnlWaitScreen = new JPanel();
         JLabel lblWait = new JLabel("Waiting for another player...");
@@ -138,7 +136,17 @@ public class CheckersWindow extends JFrame {
             board.init(me, secondPlayer, true);
         }
 
-        // TODO: Implement rest
+        getContentPane().removeAll();
+
+        // TODO: Implement proper players panel
+        JPanel playersPanel = new JPanel();
+        JLabel lblPlayers = new JLabel("Players");
+        playersPanel.add(lblPlayers);
+
+        setLayout(new BorderLayout());
+        add(playersPanel, BorderLayout.NORTH);
+        add(board, BorderLayout.CENTER);
+
 
         validate();
         repaint();

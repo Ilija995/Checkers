@@ -20,6 +20,7 @@ public class UserDb extends UnicastRemoteObject implements IUserDb {
     protected UserDb() throws RemoteException{
         users=new ArrayList<>();
     }
+
     @Override
     public int add(IUser user) throws RemoteException {
         if(users.size() <= 1){
@@ -38,7 +39,6 @@ public class UserDb extends UnicastRemoteObject implements IUserDb {
     public void remove(IUser user) throws RemoteException {
         users.remove(user);
         send(user,"quit");
-
     }
 
     @Override
