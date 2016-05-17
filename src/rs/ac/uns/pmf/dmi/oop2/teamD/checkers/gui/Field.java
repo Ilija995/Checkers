@@ -69,8 +69,12 @@ class Field extends JPanel {
 	 * Selects filed if this piece can take most of the opponents pieces
 	 */
 	private boolean trySelectField() {
-		// TODO: Implement this
-		return false;
+		boolean selected=false;
+		if(!board.isBlue()) {
+			selected = true;
+			board.setSelectedField(this);
+		}
+		return selected;
 	}
 
 	private boolean tryMakeMove() {
@@ -109,7 +113,7 @@ class Field extends JPanel {
 	 * Promote pawn to queen if end line reached
 	 */
 	private void tryPromote() {
-		// TODO: Implement this
+		setQueen();
 	}
 
 	private void setPiece() {
@@ -131,7 +135,14 @@ class Field extends JPanel {
 	}
 
 	private void setQueen() {
-		// TODO: Implement this
+		Field selected = board.getSelectedField();
+		List<Pair<Field,Field>> validMoves=board.getValidMoves(selected.id);
+		if(user.equals(board.getMe()) && board.isBlue() && validMoves.stream().anyMatch(pair->pair.first.id==(selected.id+9)) ){
+			setBlueQueen();
+		}
+		else if(user.equals(board.getMe()) && !board.isBlue() && validMoves.stream().anyMatch(pair->pair.first.id==(selected.id+9)) ){
+			setOrangeQueen();
+		}
 	}
 
 	private void setBluePawn(){
