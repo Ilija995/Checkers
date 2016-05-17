@@ -23,8 +23,6 @@ public class CheckersWindow extends JFrame {
 
     private static final Logger logger = Logger.getLogger(CheckersWindow.class.getName());
 
-    private JTextField txtUserName;
-    private JLabel lblUserName;
     private Board board;
     private IUserDb userDb;
     private IUser me;
@@ -46,9 +44,8 @@ public class CheckersWindow extends JFrame {
         getContentPane().removeAll();
         setLayout(new BorderLayout());
         JPanel pnlLoginScreen = new JPanel();
-
-        lblUserName = new JLabel("Enter your name: ");
-        txtUserName = new JTextField(30);
+        JTextField txtUserName = new JTextField(30);
+        JLabel lblUserName = new JLabel("Enter your name: ");
 
         JButton btnLogIn = new JButton("LogIn");
 
@@ -105,6 +102,7 @@ public class CheckersWindow extends JFrame {
 
         getContentPane().removeAll();
         JPanel pnlWaitScreen = new JPanel();
+        JLabel lblWait = new JLabel("Waiting for another player...");
         JButton btnQuit = new JButton("Quit");
 
         btnQuit.addActionListener(e -> {
@@ -112,11 +110,10 @@ public class CheckersWindow extends JFrame {
             dispose();
         });
 
+        pnlWaitScreen.add(lblWait);
         pnlWaitScreen.add(btnQuit);
 
-        add(pnlWaitScreen, BorderLayout.SOUTH);
-
-        JOptionPane.showMessageDialog(null, "Waiting for second player");
+        add(pnlWaitScreen, BorderLayout.NORTH);
     }
 
 	/**

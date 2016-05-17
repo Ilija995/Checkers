@@ -130,7 +130,7 @@ class Field extends JPanel {
 	}
 
 	private void setQueen() {
-		
+
 	}
 
 	private void setBluePawn(){
