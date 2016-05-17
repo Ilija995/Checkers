@@ -114,6 +114,9 @@ public class CheckersWindow extends JFrame {
         pnlWaitScreen.add(btnQuit);
 
         add(pnlWaitScreen, BorderLayout.NORTH);
+
+        validate();
+        repaint();
     }
 
 	/**
@@ -136,6 +139,9 @@ public class CheckersWindow extends JFrame {
         }
 
         // TODO: Implement rest
+
+        validate();
+        repaint();
     }
 
     public void onOpponentQuit() {
