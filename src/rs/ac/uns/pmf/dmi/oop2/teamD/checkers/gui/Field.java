@@ -78,8 +78,10 @@ class Field extends JPanel {
 		// if possible, make valid move
 		if (moves != null && moves.stream().anyMatch(pair -> pair.first.id == id)) {
 			isPawn = board.getSelectedField().isPawn;
+			user = board.getSelectedField().user;
 			setPiece();
 			board.getSelectedField().removePiece();
+			board.setSelectedField(null);
 
 			// Remove captured piece
 			Field captured = moves.stream().filter(pair -> pair.first.id == id).findFirst().get().second;
