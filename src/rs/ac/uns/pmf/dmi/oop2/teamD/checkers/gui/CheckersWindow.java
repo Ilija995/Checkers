@@ -8,6 +8,8 @@ import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.user.User;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
@@ -37,6 +39,21 @@ public class CheckersWindow extends JFrame {
 
         showLoginScreen();
         this.board = new Board(userDb, CheckersWindow.this);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    userDb.remove(me);
+                }
+                catch (RemoteException re) {
+                    reportError("Couldn't remove player", true, re);
+                }
+                finally {
+                    dispose();
+                }
+            }
+        });
     }
 
     private void showLoginScreen() {
@@ -143,17 +160,22 @@ public class CheckersWindow extends JFrame {
         JLabel lblVersus = new JLabel("versus");
         JLabel lblOrangePlayer = new JLabel();
 
+        String myName = null;
+        String opponentName = null;
         try {
-            lblBluePlayer.setOpaque(true);
-            lblBluePlayer.setBackground(Color.BLUE);
-            lblBluePlayer.setText(me.getName());
-
-            lblOrangePlayer.setOpaque(true);
-            lblOrangePlayer.setBackground(Color.ORANGE);
-            lblOrangePlayer.setText(userDb.getOpponent(me).getName());
+            myName = me.getName();
+            opponentName = userDb.getOpponent(me).getName();
         } catch (RemoteException re) {
-
+            reportError("Cannot get user name", false, re);
         }
+
+        lblBluePlayer.setOpaque(true);
+        lblBluePlayer.setBackground(Color.BLUE);
+        lblBluePlayer.setText(board.isBlue() ? myName : opponentName);
+
+        lblOrangePlayer.setOpaque(true);
+        lblOrangePlayer.setBackground(Color.ORANGE);
+        lblOrangePlayer.setText(board.isBlue() ? opponentName : myName);
 
         playersPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         playersPanel.add(lblBluePlayer);

@@ -29,6 +29,7 @@ public class UserDb extends UnicastRemoteObject implements IUserDb {
             }
 
             users.add(user);
+            System.out.printf("User %s added\n", user.getName());
             return users.size();
         }
 
@@ -38,6 +39,7 @@ public class UserDb extends UnicastRemoteObject implements IUserDb {
     @Override
     public void remove(IUser user) throws RemoteException {
         users.remove(user);
+        System.out.printf("User %s removed\n", user.getName());
         send(user,"quit");
     }
 
@@ -56,6 +58,7 @@ public class UserDb extends UnicastRemoteObject implements IUserDb {
     public void send(IUser sender, String message) throws RemoteException {
        for(IUser t:users){
             if(!t.equals(sender)){
+                System.out.printf("User %s sent \"%s\"\n", sender.getName(), message);
                 t.onOpponentMove(sender,message);
             }
         }
