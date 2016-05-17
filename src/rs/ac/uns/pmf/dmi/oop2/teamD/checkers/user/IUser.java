@@ -9,9 +9,9 @@ import java.rmi.RemoteException;
  */
 public interface IUser extends Remote, Serializable {
 	
-	String getName();
+	String getName() throws RemoteException;
 
-	String getHost();
+	String getHost() throws RemoteException;
 
 	/**
 	 * Receives the opponent move from the server
@@ -22,11 +22,11 @@ public interface IUser extends Remote, Serializable {
 	void onOpponentMove(IUser opponent, String move) throws RemoteException;
 
 	void onOpponentConnect(IUser user) throws RemoteException;
+	/*
+	@Override
+	boolean equals(Object anObject) throws RemoteException ;
 
 	@Override
-	boolean equals(Object anObject);
-
-	@Override
-	int hashCode();
-
+	int hashCode() throws RemoteException;
+	*/
 }

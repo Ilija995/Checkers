@@ -32,7 +32,7 @@ public class CheckersWindow extends JFrame {
     public CheckersWindow(String dbHost) {
 
         try {
-            userDb = (UserDb) RegistryManager.get(dbHost).lookup(UserDb.RMI_NAME);
+            userDb = (IUserDb) RegistryManager.get(dbHost).lookup(IUserDb.RMI_NAME);
         } catch (RemoteException | NotBoundException ex) {
             reportError("Initialization error.", true, ex);
         }
@@ -97,7 +97,8 @@ public class CheckersWindow extends JFrame {
     }
 
 	/**
-     * Show wait window while waiting for other player
+     * Shows wait screen INSTEAD of login with a constantly displayed
+     * message in the centre and Quit button at the bottom.
      */
     private void showWaitScreen() {
         // TODO: Implement this
@@ -119,7 +120,9 @@ public class CheckersWindow extends JFrame {
     }
 
 	/**
-     * Method for main window creation
+     * Initializes main screen that contains board panel in the centre
+     * and players in both of the upper corners. Players are showed
+     * in boxes colored with the same color as their pieces
      * @param secondPlayer Second player in a game
      */
     public void initMain(IUser secondPlayer) {
@@ -139,11 +142,14 @@ public class CheckersWindow extends JFrame {
     }
 
     public void onOpponentQuit() {
-        // TODO: Implement this
         JOptionPane.showMessageDialog(this, "Your opponent has quit, you win!" + "\nThe game will now exit.");
         dispose();
     }
 
+	/**
+     * Action performed on opponents move.
+     * @param move
+     */
     public void onOpponentMove(String move) {
         // TODO: Implement this
         switch(move.substring(0,move.indexOf(' '))){

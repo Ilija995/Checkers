@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * JPanel representing checkers board with all of its logic
@@ -27,7 +28,7 @@ class Board extends JPanel {
 	private boolean isBlue;
 	private IUser me;
 	private boolean myMove;
-	private List<Field> validPieces;
+	private List<Field> validFields;
 
 	Board(IUserDb userDb, CheckersWindow window) {
 		this.userDb = userDb;
@@ -79,20 +80,20 @@ class Board extends JPanel {
 		this.myMove = myMove;
 	}
 
-	List<Field> getValidPieces() {
-		return validPieces;
+	List<Field> getValidFields() {
+		return validFields;
 	}
 
-	void setValidPieces(List<Field> validPieces) {
-		this.validPieces = validPieces;
+	void setValidFields(List<Field> validFields) {
+		this.validFields = validFields;
 	}
 
 	/**
-	 * Calculates which piece fields are valid
-	 * A piece is valid if maximum number of opponents pieces can be captured
-	 * starting form that piece
+	 * Calculates which fields are valid
+	 * A field is valid if it contains a piece of this player and
+	 * maximum number of opponents pieces can be captured starting form that piece
 	 */
-	void calculateValidPieces() {
+	void calculateValidFields() {
 		// TODO: Implement this
 	}
 

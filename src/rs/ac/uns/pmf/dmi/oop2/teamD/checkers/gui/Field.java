@@ -50,7 +50,7 @@ class Field extends JPanel {
 							// Force player to move this piece next time
 							List<Field> newValidPieces = new ArrayList<>();
 							newValidPieces.add(Field.this);
-							board.setValidPieces(newValidPieces);
+							board.setValidFields(newValidPieces);
 
 							board.sendMove("move " + selected.id + " " + id);
 						}

@@ -24,6 +24,7 @@ public class UserDb extends UnicastRemoteObject implements IUserDb {
     public int add(IUser user) throws RemoteException {
         if(users.size() <= 1){
             for (IUser u : users) {
+                u.onOpponentConnect(user);
             }
 
             users.add(user);

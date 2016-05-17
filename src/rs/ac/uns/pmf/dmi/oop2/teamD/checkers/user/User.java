@@ -24,12 +24,12 @@ public class User extends UnicastRemoteObject implements IUser {
 
 
     @Override
-    public String getName() {
+    public String getName() throws RemoteException {
         return name;
     }
 
     @Override
-    public String getHost() {
+    public String getHost() throws RemoteException {
         return host;
     }
 
@@ -51,9 +51,9 @@ public class User extends UnicastRemoteObject implements IUser {
     public void onOpponentConnect(IUser user) throws RemoteException {
         EventQueue.invokeLater(() -> wnd.initMain(user));
     }
-
+    /*
     @Override
-    public int hashCode() {
+    public int hashCode() throws RemoteException {
         final int prime = 31;
         int ret = 1;
         ret = prime * ret + getHost().hashCode();
@@ -62,7 +62,7 @@ public class User extends UnicastRemoteObject implements IUser {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o) throws RemoteException {
         if (this == o) {
             return true;
         }
@@ -81,5 +81,5 @@ public class User extends UnicastRemoteObject implements IUser {
         }
         return true;
     }
-
+    */
 }
