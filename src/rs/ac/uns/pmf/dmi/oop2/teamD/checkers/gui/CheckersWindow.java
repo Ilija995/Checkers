@@ -144,9 +144,11 @@ public class CheckersWindow extends JFrame {
         JLabel lblOrangePlayer = new JLabel();
 
         try {
+            lblBluePlayer.setOpaque(true);
             lblBluePlayer.setBackground(Color.BLUE);
             lblBluePlayer.setText(me.getName());
 
+            lblOrangePlayer.setOpaque(true);
             lblOrangePlayer.setBackground(Color.ORANGE);
             lblOrangePlayer.setText(secondPlayer.getName());
         } catch (RemoteException re) {
