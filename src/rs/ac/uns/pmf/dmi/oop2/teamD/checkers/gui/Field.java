@@ -125,6 +125,8 @@ class Field extends JPanel {
 	}
 
 	private void setPiece() {
+		if(user == null)
+			return;
 		if (isPawn) {
 			setPawn();
 		}
@@ -177,5 +179,9 @@ class Field extends JPanel {
 
 	public int getId(){
 		return id;
+	}
+
+	public IUser getUser(){
+		return user;
 	}
 }

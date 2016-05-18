@@ -141,7 +141,15 @@ class Board extends JPanel {
 	}
 
 	public int getId(int x, int y){
-		return (x * 10 + y) / 2;
+		return 0;
+	}
+
+	public int getX(int id){
+		return 0;
+	}
+
+	public int getY(){
+		return 0;
 	}
 
 	void sendMove(String move) {
@@ -192,45 +200,83 @@ class Board extends JPanel {
 	 */
 	List<Pair<Field, Field>> getValidMoves(int filedId) {
 		List<Pair<Field,Field>> validMoves = new ArrayList<>();
-		int x=0;
-		int y=0;
-		for(int i=0; i<BOARD_SIZE; i++) {
-			for (int j = 0; j < BOARD_SIZE; j++) {
-				if (getId(i, j) == filedId) {
-					x = i;
-					y = j;
-					break;
+		int x=getX();
+		int y=getY();
+
+		if(isBlue && board[x][y].isPawn()) {
+			validMoves = getValidPawnMoves(x, y, 2);
+		}
+		else if(!isBlue && board[x][y].isPawn()){
+			validMoves = getValidPawnMoves(x, y, 0);
+		}
+		else if(!board[x][y].isPawn() && board[x][y].getUser().equals(me)) {
+			validMoves = getValidQueenMoves(x,y);
+		}
+
+		return validMoves;
+	}
+
+	private List<Pair<Field, Field>> getValidPawnMoves(int x, int y, int start) {
+		List<Pair<Field, Field>> pawnMoves = new ArrayList<>();
+
+		int[] dx = {1, 1, -1, -1};
+		int[] dy = {1, -1, 1, -1};
+
+		for (int count = start; count < dx.length; count++) {
+			int i = dx[count];
+			int j = dy[count];
+			while (x + i > 0 && x + i < 10 && y + j > 0 && y + j < 10) {
+				i = i + x;
+				j = j + y;
+				if ((board[i][j].isPawn() && !board[i][j].getUser().equals(me)) || (!board[i][j].isPawn() && board[i][j].getUser().equals(me))) {
+					int ii = dx[count] * 2 + x;
+					int jj = dy[count] * 2 + y;
+					if (ii > 0 && ii < 10 && jj > 0 && jj < 10) {
+						if (!board[ii][jj].isPawn() && !board[ii][jj].getUser().equals(me))
+							pawnMoves.add(new Pair<>(board[i][j], board[ii][jj]));
+					}
+				} else if (!board[i][j].isPawn() && !board[i][j].getUser().equals(me)) {
+					pawnMoves.add(new Pair<>(board[i][j], null));
 				}
 			}
 		}
-
-		int[] di = { 1, -1, 1, -1};
-		int[] dj = { 1, 1, -1, -1};
-
-		if (!board[x+1][y+1].isPawn()) {
-			validMoves.add(new Pair<>(board[x+1][y+1], null));
-		}
-		else{
-			getValidMoves(getId(x+1,y+1));
-		}
-		if(!board[x+1][y-1].isPawn()){
-			validMoves.add(new Pair<>(board[x+1][y-1], null));
-		}
-		else{
-			getValidMoves(getId(x+1,y-1));
-		}
-		if(!board[x-1][y-1].isPawn()){
-			validMoves.add(new Pair<>(board[x-1][y-1], null));
-		}
-		else{
-			getValidMoves(getId(x-1,y-1));
-		}
-		if(!board[x-1][y+1].isPawn()){
-			validMoves.add(new Pair<>(board[x-1][y+1], null));
-		}
-		else{
-			getValidMoves(getId(x-1,y+1));
-		}
-		return validMoves;
+		return pawnMoves;
 	}
+
+		private List<Pair<Field, Field>> getValidQueenMoves ( int x, int y){
+			List<Pair<Field, Field>> queenMoves = new ArrayList<>();
+
+			int[] dx = {1, -1, 1, -1};
+			int[] dy = {1, 1, -1, -1};
+
+			int maxDiagLen = 0;
+			if (x <= y) maxDiagLen = 9 - x;
+			else maxDiagLen = 9 - y;
+
+			for (int count = 0; count < dx.length; count++) {
+				int i = dx[count];
+				int j = dy[count];
+				int diagIndex = 1;
+				int diagLen = 0;
+				while (diagLen < maxDiagLen && diagIndex < 5) {
+					i = i + x + diagLen;
+					j = j + y + diagLen;
+					if (!board[i][j].isPawn() && !board[i][j].getUser().equals(me)) {
+						queenMoves.add(new Pair<>(board[x + i][y + 1], null));
+						diagLen++;
+					} else if ((board[i][j].isPawn() && !board[i][j].getUser().equals(me)) || (!board[i][j].isPawn() && ! odsboard[i][j].getUser().equals(me))) {
+						diagLen++;
+						int ii = dx[count] * 2 + diagLen + x;
+						int jj = dy[count] + 2 + diagLen + y;
+						if (diagLen < maxDiagLen) {
+							if (!board[ii][jj].isPawn() && !board[ii][jj].getUser().equals(me))
+								queenMoves.add(new Pair<>(board[ii][jj], board[i][j]));
+						}
+					}
+					diagIndex++;
+				}
+			}
+
+			return queenMoves;
+		}
 }
