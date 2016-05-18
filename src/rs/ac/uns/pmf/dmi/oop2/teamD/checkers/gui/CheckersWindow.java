@@ -8,6 +8,8 @@ import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.user.User;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
@@ -27,16 +29,24 @@ public class CheckersWindow extends JFrame {
     private IUserDb userDb;
     private IUser me;
 
-    public CheckersWindow(String dbHost) {
-
-        try {
-            userDb = (IUserDb) RegistryManager.get(dbHost).lookup(IUserDb.RMI_NAME);
-        } catch (RemoteException | NotBoundException ex) {
-            reportError("Initialization error.", true, ex);
-        }
+    public CheckersWindow() {
 
         showLoginScreen();
-        this.board = new Board(userDb, CheckersWindow.this);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    userDb.remove(me);
+                }
+                catch (RemoteException re) {
+                    reportError("Couldn't remove player", true, re);
+                }
+                finally {
+                    dispose();
+                }
+            }
+        });
     }
 
     private void showLoginScreen() {
@@ -46,15 +56,29 @@ public class CheckersWindow extends JFrame {
         JPanel pnlLoginScreen = new JPanel();
         JTextField txtUserName = new JTextField(30);
         JLabel lblUserName = new JLabel("Enter your name: ");
+        JPanel pnlHost = new JPanel();
+        JTextField txtHostEntry = new JTextField(30);
+        JLabel lblHostName = new JLabel("Host of the RMI registry holding the User DB?");
 
         JButton btnLogIn = new JButton("LogIn");
 
         btnLogIn.addActionListener(e -> {
+            String dbHost = txtHostEntry.getText();
+
+            try {
+                userDb = (IUserDb) RegistryManager.get(dbHost).lookup(IUserDb.RMI_NAME);
+            } catch (RemoteException | NotBoundException ex) {
+                reportError("Initialization error.", true, ex);
+            }
+
+            this.board = new Board(userDb, CheckersWindow.this);
+
             try {
                 String host = System.getProperty("java.rmi.server.hostname");
                 if (host == null) {
                     host = "localhost";
                 }
+
                 String name = txtUserName.getText();
 
                 Registry reg = RegistryManager.get();
@@ -90,7 +114,11 @@ public class CheckersWindow extends JFrame {
         pnlLoginScreen.add(txtUserName);
         pnlLoginScreen.add(btnLogIn);
 
-        add(pnlLoginScreen, BorderLayout.NORTH);
+        pnlHost.add(lblHostName);
+        pnlHost.add(txtHostEntry);
+
+        add(pnlHost, BorderLayout.NORTH);
+        add(pnlLoginScreen, BorderLayout.CENTER);
     }
 
 	/**
@@ -143,15 +171,22 @@ public class CheckersWindow extends JFrame {
         JLabel lblVersus = new JLabel("versus");
         JLabel lblOrangePlayer = new JLabel();
 
+        String myName = null;
+        String opponentName = null;
         try {
-            lblBluePlayer.setBackground(Color.BLUE);
-            lblBluePlayer.setText(me.getName());
-
-            lblOrangePlayer.setBackground(Color.ORANGE);
-            lblOrangePlayer.setText(secondPlayer.getName());
+            myName = me.getName();
+            opponentName = userDb.getOpponent(me).getName();
         } catch (RemoteException re) {
-
+            reportError("Cannot get user name", false, re);
         }
+
+        lblBluePlayer.setOpaque(true);
+        lblBluePlayer.setBackground(Color.BLUE);
+        lblBluePlayer.setText(board.isBlue() ? myName : opponentName);
+
+        lblOrangePlayer.setOpaque(true);
+        lblOrangePlayer.setBackground(Color.ORANGE);
+        lblOrangePlayer.setText(board.isBlue() ? opponentName : myName);
 
         playersPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         playersPanel.add(lblBluePlayer);
@@ -216,12 +251,7 @@ public class CheckersWindow extends JFrame {
 
         }
 
-        String dbHost = JOptionPane.showInputDialog(null, "Host of the RMI registry holding the User DB?");
-        if (dbHost == null || dbHost.length() == 0) {
-            return;
-        }
-
-        CheckersWindow chw = new CheckersWindow(dbHost);
+        CheckersWindow chw = new CheckersWindow();
         chw.setDefaultCloseOperation(EXIT_ON_CLOSE);
         chw.setSize(500, 500);
         chw.setTitle("Checkers");
