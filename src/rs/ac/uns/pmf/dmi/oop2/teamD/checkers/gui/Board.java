@@ -7,6 +7,7 @@ import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.utility.Pair;
 import javax.swing.*;
 import java.awt.*;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -94,7 +95,53 @@ class Board extends JPanel {
 	 * maximum number of opponents pieces can be captured starting form that piece
 	 */
 	void calculateValidFields() {
-		// TODO: Implement this
+		int max=Integer.MIN_VALUE;
+		for(int i=0; i<BOARD_SIZE; i++){
+			for(int j=0; j<BOARD_SIZE; j++) {
+				Field root = board[i][j];
+				if (root.isPawn()) {
+					int rootId = getId(i, j);
+					int maxx=calculateValidFields(root, rootId).first;
+					Field valid=calculateValidFields(root,rootId).second;
+					int count=0;
+					if(maxx > max) {
+						max = maxx;
+						if(validFields != null) {
+							validFields.remove(count);
+						}
+						validFields.add(valid);
+						count++;
+					}
+					else if(maxx == max){
+						validFields.add(valid);
+					}
+				}
+			}
+		}
+	}
+
+	private Pair<Integer, Field> calculateValidFields(Field root,int rootId){
+		int leftId=rootId+5;
+		int rightId=rootId+6;
+		int max=1;
+		if(root != null) {
+			max++;
+			List<Pair<Field, Field>> validMoves = getValidMoves(rootId);
+			List<Pair<Field, Field>> left = new ArrayList<>();
+			left.add(validMoves.get(0));
+			Pair<Integer, Field> validLeft = calculateValidFields(left.get(0).first, leftId);
+			List<Pair<Field, Field>> right = new ArrayList<>();
+			right.add(validMoves.get(1));
+			Pair<Integer, Field> validRight = calculateValidFields(right.get(0).second, rightId);
+			if (validLeft.first > validRight.first) {
+				return validLeft;
+			}
+		}
+		return null;
+	}
+
+	public int getId(int x, int y){
+		return (x * 10 + y) / 2;
 	}
 
 	void sendMove(String move) {
@@ -144,8 +191,46 @@ class Board extends JPanel {
 	 * second field is null.
 	 */
 	List<Pair<Field, Field>> getValidMoves(int filedId) {
-		// TODO: Implement this
+		List<Pair<Field,Field>> validMoves = new ArrayList<>();
+		int x=0;
+		int y=0;
+		for(int i=0; i<BOARD_SIZE; i++) {
+			for (int j = 0; j < BOARD_SIZE; j++) {
+				if (getId(i, j) == filedId) {
+					x = i;
+					y = j;
+					break;
+				}
+			}
+		}
 
-		return null;
+		int[] di = { 1, -1, 1, -1};
+		int[] dj = { 1, 1, -1, -1};
+
+		if (!board[x+1][y+1].isPawn()) {
+			validMoves.add(new Pair<>(board[x+1][y+1], null));
+		}
+		else{
+			getValidMoves(getId(x+1,y+1));
+		}
+		if(!board[x+1][y-1].isPawn()){
+			validMoves.add(new Pair<>(board[x+1][y-1], null));
+		}
+		else{
+			getValidMoves(getId(x+1,y-1));
+		}
+		if(!board[x-1][y-1].isPawn()){
+			validMoves.add(new Pair<>(board[x-1][y-1], null));
+		}
+		else{
+			getValidMoves(getId(x-1,y-1));
+		}
+		if(!board[x-1][y+1].isPawn()){
+			validMoves.add(new Pair<>(board[x-1][y+1], null));
+		}
+		else{
+			getValidMoves(getId(x-1,y+1));
+		}
+		return validMoves;
 	}
 }

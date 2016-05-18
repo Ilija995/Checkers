@@ -69,7 +69,11 @@ class Field extends JPanel {
 	 * Selects filed if this piece can take most of the opponents pieces
 	 */
 	private boolean trySelectField() {
-		return false;
+		if(user.equals(board.getMe()) && board.getValidFields().stream().anyMatch(f -> f.id == id)){
+			board.setSelectedField(this);
+			return true;
+		}else
+			return false;
 	}
 
 	private boolean tryMakeMove() {
@@ -112,6 +116,11 @@ class Field extends JPanel {
 	 * Promote pawn to queen if end line reached
 	 */
 	private void tryPromote() {
+		if(id >= 1 && id <= 5 && ((user.equals(board.getMe()) && board.isBlue()) || (!user.equals(board.getMe()) && !board.isBlue()))){
+			setBlueQueen();
+		}else if (id>=45 && id <=50 && ((user.equals(board.getMe()) && !board.isBlue()) || (!user.equals(board.getMe()) && board.isBlue()))){
+			setOrangeQueen();
+		}
 
 	}
 
@@ -134,7 +143,12 @@ class Field extends JPanel {
 	}
 
 	private void setQueen() {
-
+		if ((user.equals(board.getMe()) && board.isBlue()) || (!user.equals(board.getMe()) && !board.isBlue())) {
+			setBlueQueen();
+		}
+		else if ((user.equals(board.getMe()) && !board.isBlue()) || (!user.equals(board.getMe()) && board.isBlue())) {
+			setOrangeQueen();
+		}
 	}
 
 	private void setBluePawn(){
@@ -157,5 +171,11 @@ class Field extends JPanel {
 		user = null;
 		label.setIcon(null);
 	}
+	public boolean isPawn(){
+		return isPawn;
+	}
 
+	public int getId(){
+		return id;
+	}
 }
