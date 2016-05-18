@@ -218,16 +218,53 @@ public class CheckersWindow extends JFrame {
                 //setSelected(move.substring(move.indexOf(' ')+1));
                 break;
             case "move":
-                //doMove(move.substring(move.indexOf(' ')+1));
+                //replicateOpponentMove(move.substring(move.indexOf(' ')+1));
                 break;
             case "final":
-                //something...
+                //opponentFinalMove(move.substring(move.indexOf(' ')+1));
                 break;
             default:
                 throw new IllegalArgumentException("Invalid move string");
 
         }
     }
+    /*public void setSelected(String id){
+        int br=Integer.parseInt(id);
+        int i=getI(id);
+        int j=getJ(id);
+        board[i][j].setBackground(Color.YELLOW); or board.selectField(id);
+    }
+    public void replicateOpponentMove(String move){
+        String[] s=move.split(" ");
+        if(s.length==2){
+            int startField=Integer.parseInt(s[0].trim());
+            int endField=Integer.parseInt(s[1].trim());
+        }else throw new IllegalArgumentException("bad move");
+        int i1=getI(startField);
+        int j1=getJ(startField);
+        int i2=getI(endField);
+        int j2=getJ(endField);
+        boolean pawn=board[i1][j1].isPawn();
+        board[i1][j1].removePiece();
+        if((i2-i1)!=1||(i2-i1)!=-1){
+            i lost my train of thought here but the point is if its a jump, remove piece over witch the jump is made else just move the piece to the [i2][j2]
+            board[][].removePiece();
+            if(pawn){
+                board[i2][j2].setPawn();
+            }else board[i2][j2].setQueen();
+        }else{
+            board[i1][j1].removePiece();
+            if(pawn){
+                board[i2][j2].setPawn();
+            }else board[i2][j2].setQueen();
+        }
+    }
+    public void opponentFinalMove(String move){
+        replicateOpponentMove(move);
+        board.setMyMove(true);
+    }
+    */
+
 
     public void reportError(String msg, boolean exit, Throwable throwable) {
         logger.log(exit ? Level.SEVERE : Level.WARNING, msg, throwable);
