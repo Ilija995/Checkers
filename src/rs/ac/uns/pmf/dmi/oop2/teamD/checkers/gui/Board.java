@@ -18,6 +18,9 @@ class Board extends JPanel {
 
 	public static final int BOARD_SIZE = 10;
 
+	private static final int[] DI = {1, 1, -1, -1};
+	private static final int[] DJ = {1, -1, 1, -1};
+
 	private CheckersWindow window;
 	private Field[][] board = new Field[BOARD_SIZE][BOARD_SIZE];
 	private Icon bluePawn;
@@ -95,61 +98,6 @@ class Board extends JPanel {
 	 * maximum number of opponents pieces can be captured starting form that piece
 	 */
 	void calculateValidFields() {
-		int max=Integer.MIN_VALUE;
-		for(int i=0; i<BOARD_SIZE; i++){
-			for(int j=0; j<BOARD_SIZE; j++) {
-				Field root = board[i][j];
-				if (root.isPawn()) {
-					int rootId = getId(i, j);
-					int maxx=calculateValidFields(root, rootId).first;
-					Field valid=calculateValidFields(root,rootId).second;
-					int count=0;
-					if(maxx > max) {
-						max = maxx;
-						if(validFields != null) {
-							validFields.remove(count);
-						}
-						validFields.add(valid);
-						count++;
-					}
-					else if(maxx == max){
-						validFields.add(valid);
-					}
-				}
-			}
-		}
-	}
-
-	private Pair<Integer, Field> calculateValidFields(Field root,int rootId){
-		int leftId=rootId+5;
-		int rightId=rootId+6;
-		int max=1;
-		if(root != null) {
-			max++;
-			List<Pair<Field, Field>> validMoves = getValidMoves(rootId);
-			List<Pair<Field, Field>> left = new ArrayList<>();
-			left.add(validMoves.get(0));
-			Pair<Integer, Field> validLeft = calculateValidFields(left.get(0).first, leftId);
-			List<Pair<Field, Field>> right = new ArrayList<>();
-			right.add(validMoves.get(1));
-			Pair<Integer, Field> validRight = calculateValidFields(right.get(0).second, rightId);
-			if (validLeft.first > validRight.first) {
-				return validLeft;
-			}
-		}
-		return null;
-	}
-
-	public int getId(int x, int y){
-		return 0;
-	}
-
-	public int getX(int id){
-		return 0;
-	}
-
-	public int getY(){
-		return 0;
 	}
 
 	void sendMove(String move) {
@@ -160,11 +108,13 @@ class Board extends JPanel {
 		}
 	}
 
-	void init(IUser me, IUser opponent, boolean isBlue) {
+	void init(IUser me, IUser opponent, boolean blue) {
 		this.me = me;
-		this.isBlue = isBlue;
+		this.isBlue = blue;
 
 		setLayout(new GridLayout(BOARD_SIZE, BOARD_SIZE));
+
+		System.out.printf("==> Board init <================\n");
 
 		for (int i = 0; i < BOARD_SIZE; ++i) {
 			for (int j = 0; j < BOARD_SIZE; ++j) {
@@ -180,13 +130,21 @@ class Board extends JPanel {
 							Board.this,
 							fieldId,
 							Color.DARK_GRAY,
-							orangeSide ? ((isBlue) ? opponent : me) : blueSide ? ((isBlue) ? me : opponent) : null,
+							orangeSide ? ((blue) ? opponent : me) : blueSide ? ((blue) ? me : opponent) : null,
 							orangeSide || blueSide
 					);
 				}
+				System.out.printf(" %2d", board[i][j].getId());
 				add(board[i][j]);
 			}
+			System.out.println();
 		}
+
+		System.out.printf("================================\n");
+	}
+
+	private boolean areValidCoordinated(int i, int j) {
+		return i >= 0 && i < BOARD_SIZE && j >= 0 && j < BOARD_SIZE;
 	}
 
 	/**
@@ -199,84 +157,111 @@ class Board extends JPanel {
 	 * second field is null.
 	 */
 	List<Pair<Field, Field>> getValidMoves(int filedId) {
-		List<Pair<Field,Field>> validMoves = new ArrayList<>();
-		int x=getX();
-		int y=getY();
+		List<Pair<Field, Field>> moves = new ArrayList<>();
+		Pair<Integer, Integer> coordinates = Field.getCoordinates(filedId);
+		int i = coordinates.first;
+		int j = coordinates.second;
 
-		if(isBlue && board[x][y].isPawn()) {
-			validMoves = getValidPawnMoves(x, y, 2);
-		}
-		else if(!isBlue && board[x][y].isPawn()){
-			validMoves = getValidPawnMoves(x, y, 0);
-		}
-		else if(!board[x][y].isPawn() && board[x][y].getUser().equals(me)) {
-			validMoves = getValidQueenMoves(x,y);
-		}
+		if (areValidCoordinated(i, j) && board[i][j].getUser() != null) {
 
-		return validMoves;
-	}
-
-	private List<Pair<Field, Field>> getValidPawnMoves(int x, int y, int start) {
-		List<Pair<Field, Field>> pawnMoves = new ArrayList<>();
-
-		int[] dx = {1, 1, -1, -1};
-		int[] dy = {1, -1, 1, -1};
-
-		for (int count = start; count < dx.length; count++) {
-			int i = dx[count];
-			int j = dy[count];
-			while (x + i > 0 && x + i < 10 && y + j > 0 && y + j < 10) {
-				i = i + x;
-				j = j + y;
-				if ((board[i][j].isPawn() && !board[i][j].getUser().equals(me)) || (!board[i][j].isPawn() && board[i][j].getUser().equals(me))) {
-					int ii = dx[count] * 2 + x;
-					int jj = dy[count] * 2 + y;
-					if (ii > 0 && ii < 10 && jj > 0 && jj < 10) {
-						if (!board[ii][jj].isPawn() && !board[ii][jj].getUser().equals(me))
-							pawnMoves.add(new Pair<>(board[i][j], board[ii][jj]));
+			for (int off = 0; off < DI.length; ++off) {
+				int ii = i + DI[off];
+				int jj = j + DJ[off];
+				int pawnMoves = 1;
+				Field opponent = null;
+				while(areValidCoordinated(ii, jj)) {
+					if (board[i][j].isPawn() && pawnMoves > 1) {
+						break; // pawn can go only to neighbor or next to neighbor field
 					}
-				} else if (!board[i][j].isPawn() && !board[i][j].getUser().equals(me)) {
-					pawnMoves.add(new Pair<>(board[i][j], null));
-				}
-			}
-		}
-		return pawnMoves;
-	}
 
-		private List<Pair<Field, Field>> getValidQueenMoves ( int x, int y){
-			List<Pair<Field, Field>> queenMoves = new ArrayList<>();
-
-			int[] dx = {1, -1, 1, -1};
-			int[] dy = {1, 1, -1, -1};
-
-			int maxDiagLen = 0;
-			if (x <= y) maxDiagLen = 9 - x;
-			else maxDiagLen = 9 - y;
-
-			for (int count = 0; count < dx.length; count++) {
-				int i = dx[count];
-				int j = dy[count];
-				int diagIndex = 1;
-				int diagLen = 0;
-				while (diagLen < maxDiagLen && diagIndex < 5) {
-					i = i + x + diagLen;
-					j = j + y + diagLen;
-					if (!board[i][j].isPawn() && !board[i][j].getUser().equals(me)) {
-						queenMoves.add(new Pair<>(board[x + i][y + 1], null));
-						diagLen++;
-					} else if ((board[i][j].isPawn() && !board[i][j].getUser().equals(me)) || (!board[i][j].isPawn() && board[i][j].getUser().equals(me))) {
-						diagLen++;
-						int ii = dx[count] * 2 + diagLen + x;
-						int jj = dy[count] + 2 + diagLen + y;
-						if (diagLen < maxDiagLen) {
-							if (!board[ii][jj].isPawn() && !board[ii][jj].getUser().equals(me))
-								queenMoves.add(new Pair<>(board[ii][jj], board[i][j]));
+					if (board[ii][jj].getUser() == null) {
+						if (!board[i][j].isPawn() || // if queen it is valid to move in any direction
+								opponent != null || // if pawn captures opponents piece, it can move in any direction
+								(board[i][j].isBlue() && board[i][j].getId() > board[ii][jj].getId()) || // otherwise, it can move only forward
+								(!board[i][j].isBlue()) && board[i][j].getId() < board[ii][jj].getId()) {
+							moves.add(new Pair<>(board[ii][jj], opponent));
 						}
+						++pawnMoves;
 					}
-					diagIndex++;
+					else if (!board[ii][jj].getUser().equals(me) && opponent == null) {
+						opponent = board[ii][jj]; // if neighbor is opponent try to capture him
+					}
+					else {
+						break;
+					}
+
+					ii += DI[off];
+					jj += DJ[off];
 				}
 			}
-
-			return queenMoves;
 		}
+
+		Board.printMoves(board[i][j], moves);
+
+		return moves;
+	}
+
+	void selectPiece(int id) {
+		System.out.printf("-> Opponent selected %d\n", id);
+	}
+
+	void movePiece(int from, int to, int capture) {
+		System.out.printf("-> Opponent moved %d to %d, and captured %d\n", from, to, capture);
+
+		Pair<Integer, Integer> fromCoord = Field.getCoordinates(from);
+		int fromI = fromCoord.first;
+		int fromJ = fromCoord.second;
+
+		System.out.printf("----> From [%d, %d]\n", fromI, fromJ);
+
+		if (!areValidCoordinated(fromI, fromJ)) {
+			return;
+		}
+
+		Pair<Integer, Integer> toCoord = Field.getCoordinates(to);
+		int toI = toCoord.first;
+		int toJ = toCoord.second;
+
+		System.out.printf("----> To [%d, %d]\n", toI, toJ);
+
+		if (!areValidCoordinated(toI, toJ)) {
+			return;
+		}
+
+		if (capture != -1) {
+			Pair<Integer, Integer> captureCoord = Field.getCoordinates(capture);
+			int captureI = captureCoord.first;
+			int captureJ = captureCoord.second;
+
+			System.out.printf("----> Captured [%d, %d]\n", captureI, captureJ);
+
+			if (areValidCoordinated(captureI, captureJ)) {
+				board[captureI][captureJ].removePiece();
+			}
+		}
+
+		System.out.printf("----> Trying set piece\n");
+		board[toI][toJ].setPiece(board[fromI][fromJ].getUser(), board[fromI][fromJ].isPawn());
+
+		System.out.printf("----> Trying remove piece\n");
+		board[fromI][fromJ].removePiece();
+
+		System.out.printf("----> Success\n");
+	}
+
+	public static void printMoves(Field start, List<Pair<Field, Field>> moves) {
+		System.out.println("===> Printing moves <=====================");
+
+		if (moves == null) {
+			System.out.println("\tNo moves");
+		}
+		else {
+			for (Pair<Field, Field> move : moves) {
+				System.out.printf("\t%d -%s-> %d\n", start.getId(), (move.second == null) ? "" : "(" + move.second.getId() + ")", move.first.getId());
+			}
+		}
+
+
+		System.out.println("==========================================");
+	}
 }

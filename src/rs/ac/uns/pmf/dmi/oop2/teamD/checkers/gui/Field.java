@@ -17,20 +17,44 @@ class Field extends JPanel {
 
 	private int id;
 	private Board board;
-	private boolean isPawn;
+	private boolean pawn;
+	private boolean blue;
 	private JLabel label = new JLabel();
 	private IUser user;
 	private boolean canContinueMove;
+	private int capturedId;
 
-	Field(Board board, int id, Color color, IUser user, boolean isPawn) {
+	/**
+	 * Caluclates field id from coordinated i and j
+	 * @param i
+	 * @param j
+	 * @return
+	 */
+	public static int getId(int i, int j) {
+		if ((i + j) % 2 == 0) {
+			return -1;
+		}
+
+		return (Board.BOARD_SIZE * i + j) / 2 + 1;
+	}
+
+	/**
+	 * Calculate i and j coordinated on board
+	 * @param id Field id
+	 * @return First member of a pair is i, and second is j
+	 */
+	public static Pair<Integer, Integer> getCoordinates(int id) {
+		return new Pair<>((id - 1) / (Board.BOARD_SIZE / 2),
+				((id - 1) % (Board.BOARD_SIZE / 2)) * 2 + (((id - 1) % Board.BOARD_SIZE <= (Board.BOARD_SIZE / 2)) ? 1 : 0)
+				);
+	}
+
+	Field(Board board, int id, Color color, IUser user, boolean pawn) {
 		this.board = board;
 		this.id = id;
 		setBackground(color);
 		add(label);
-		this.user = user;
-		this.isPawn = isPawn;
-
-		setPiece();
+		setPiece(user, pawn);
 
 		addMouseListener(new MouseAdapter() {
 			@Override
@@ -40,6 +64,7 @@ class Field extends JPanel {
 
 				if (board.getSelectedField() == null) {
 					if (trySelectField()) {
+						System.out.printf("-> Field %d selected\n", id);
 						board.sendMove("select " + id);
 					}
 				}
@@ -52,11 +77,11 @@ class Field extends JPanel {
 							newValidPieces.add(Field.this);
 							board.setValidFields(newValidPieces);
 
-							board.sendMove("move " + selected.id + " " + id);
+							board.sendMove("move " + selected.id + " " + id + " " + capturedId);
 						}
 						else {
 							tryPromote();
-							board.sendMove("final " + selected.id + " " + id);
+							board.sendMove("final " + selected.id + " " + id + " " + capturedId);
 							board.setMyMove(false);
 						}
 					}
@@ -69,7 +94,7 @@ class Field extends JPanel {
 	 * Selects filed if this piece can take most of the opponents pieces
 	 */
 	private boolean trySelectField() {
-		if(user.equals(board.getMe()) && board.getValidFields().stream().anyMatch(f -> f.id == id)){
+		if(user != null && user.equals(board.getMe())/* && board.getValidFields().stream().anyMatch(f -> f.id == id)*/){
 			board.setSelectedField(this);
 			return true;
 		}else
@@ -81,21 +106,21 @@ class Field extends JPanel {
 
 		// if possible, make valid move
 		if (moves != null && moves.stream().anyMatch(pair -> pair.first.id == id)) {
-			isPawn = board.getSelectedField().isPawn;
-			user = board.getSelectedField().user;
-			setPiece();
+			setPiece(board.getSelectedField().user, board.getSelectedField().pawn);
 			board.getSelectedField().removePiece();
 			board.setSelectedField(null);
 
 			// Remove captured piece
 			Field captured = moves.stream().filter(pair -> pair.first.id == id).findFirst().get().second;
 			if (captured != null) {
+				capturedId = captured.id;
 				captured.removePiece();
 
 				List<Pair<Field, Field>> nextMoves = board.getValidMoves(id);
 				canContinueMove = nextMoves != null && nextMoves.size() > 0;
 			}
 			else {
+				capturedId = -1;
 				canContinueMove = false;
 			}
 
@@ -115,45 +140,53 @@ class Field extends JPanel {
 	/**
 	 * Promote pawn to queen if end line reached
 	 */
-	private void tryPromote() {
-		if(id >= 1 && id <= 5 && ((user.equals(board.getMe()) && board.isBlue()) || (!user.equals(board.getMe()) && !board.isBlue()))){
+	private boolean tryPromote() {
+		if(id >= 1 && id <= 5 && isBlue()){
 			setBlueQueen();
-		}else if (id>=45 && id <=50 && ((user.equals(board.getMe()) && !board.isBlue()) || (!user.equals(board.getMe()) && board.isBlue()))){
+			return true;
+		} else if (id>=45 && id <=50 && !isBlue()){
 			setOrangeQueen();
+			return true;
 		}
-
+		return false;
 	}
 
-	private void setPiece() {
-		if(user == null)
+	public boolean isBlue() {
+		return blue;
+	}
+
+	public void setBlue() {
+		if (user != null) {
+			blue = (user.equals(board.getMe()) && board.isBlue()) || (!user.equals(board.getMe()) && !board.isBlue());
+		}
+	}
+
+	void setPiece(IUser user, boolean pawn) {
+		this.user = user;
+		this.pawn = pawn;
+		setBlue();
+
+		if (tryPromote()) {
 			return;
-		if (isPawn) {
-			setPawn();
 		}
-		else {
-			setQueen();
+
+		if (user != null) {
+			if (isBlue() && isPawn()) {
+				setBluePawn();
+			}
+			else if (!isBlue() && isPawn()) {
+				setOrangePawn();
+			}
+			else if (isBlue() && !isPawn()) {
+				setBlueQueen();
+			}
+			else {
+				setOrangeQueen();
+			}
 		}
 	}
 
-	private void setPawn() {
-		if ((user.equals(board.getMe()) && board.isBlue()) || (!user.equals(board.getMe()) && !board.isBlue())) {
-			setBluePawn();
-		}
-		else if ((user.equals(board.getMe()) && !board.isBlue()) || (!user.equals(board.getMe()) && board.isBlue())) {
-			setOrangePawn();
-		}
-	}
-
-	private void setQueen() {
-		if ((user.equals(board.getMe()) && board.isBlue()) || (!user.equals(board.getMe()) && !board.isBlue())) {
-			setBlueQueen();
-		}
-		else if ((user.equals(board.getMe()) && !board.isBlue()) || (!user.equals(board.getMe()) && board.isBlue())) {
-			setOrangeQueen();
-		}
-	}
-
-	private void setBluePawn(){
+	private void setBluePawn() {
 		label.setIcon(board.getBluePawn());
 	}
 
@@ -161,20 +194,23 @@ class Field extends JPanel {
 		label.setIcon(board.getOrangePawn());
 	}
 
-	public void setBlueQueen(){
+	private void setBlueQueen(){
+		pawn = false;
 		label.setIcon(board.getBlueQueen());
 	}
 
-	public void setOrangeQueen() {
+	private void setOrangeQueen() {
+		pawn = false;
 		label.setIcon(board.getOrangeQueen());
 	}
 
-	private void removePiece(){
+	void removePiece(){
 		user = null;
 		label.setIcon(null);
 	}
+
 	public boolean isPawn(){
-		return isPawn;
+		return pawn;
 	}
 
 	public int getId(){

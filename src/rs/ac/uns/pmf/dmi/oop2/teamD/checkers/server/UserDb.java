@@ -40,7 +40,7 @@ public class UserDb extends UnicastRemoteObject implements IUserDb {
     public void remove(IUser user) throws RemoteException {
         users.remove(user);
         System.out.printf("User %s removed\n", user.getName());
-        send(user,"quit");
+        send(user,"quit ");
     }
 
     @Override

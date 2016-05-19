@@ -2,7 +2,6 @@ package rs.ac.uns.pmf.dmi.oop2.teamD.checkers.gui;
 
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.RegistryManager;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.server.IUserDb;
-import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.server.UserDb;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.user.IUser;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.user.User;
 
@@ -162,6 +161,7 @@ public class CheckersWindow extends JFrame {
         }
         else {
             board.init(me, secondPlayer, true);
+            board.setMyMove(true);
         }
 
         getContentPane().removeAll();
@@ -181,11 +181,15 @@ public class CheckersWindow extends JFrame {
         }
 
         lblBluePlayer.setOpaque(true);
-        lblBluePlayer.setBackground(Color.BLUE);
+        if (board.isBlue()) {
+            lblBluePlayer.setBackground(Color.BLUE);
+        }
         lblBluePlayer.setText(board.isBlue() ? myName : opponentName);
 
         lblOrangePlayer.setOpaque(true);
-        lblOrangePlayer.setBackground(Color.ORANGE);
+        if (!board.isBlue()) {
+            lblOrangePlayer.setBackground(Color.ORANGE);
+        }
         lblOrangePlayer.setText(board.isBlue() ? opponentName : myName);
 
         playersPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -203,8 +207,16 @@ public class CheckersWindow extends JFrame {
     }
 
     public void onOpponentQuit() {
-        JOptionPane.showMessageDialog(this, "Your opponent has quit, you win!" + "\nThe game will now exit.");
-        dispose();
+        try {
+            JOptionPane.showMessageDialog(this, "Your opponent has quit, you win!" + "\nThe game will now exit.");
+            userDb.remove(me);
+        }
+        catch (RemoteException re) {
+            reportError("Couldn't remove player", true, re);
+        }
+        finally {
+            dispose();
+        }
     }
 
 	/**
@@ -215,55 +227,43 @@ public class CheckersWindow extends JFrame {
         // TODO: Implement this
         switch(move.substring(0,move.indexOf(' '))){
             case "select":
-                //setSelected(move.substring(move.indexOf(' ')+1));
+                setOpponentsSelection(move.substring(move.indexOf(' ') + 1));
                 break;
             case "move":
-                //replicateOpponentMove(move.substring(move.indexOf(' ')+1));
+                makeOpponentsMove(move.substring(move.indexOf(' ') + 1), false);
                 break;
             case "final":
-                //opponentFinalMove(move.substring(move.indexOf(' ')+1));
+                makeOpponentsMove(move.substring(move.indexOf(' ') + 1), true);
                 break;
             default:
                 throw new IllegalArgumentException("Invalid move string");
 
         }
     }
-    /*public void setSelected(String id){
-        int br=Integer.parseInt(id);
-        int i=getI(id);
-        int j=getJ(id);
-        board[i][j].setBackground(Color.YELLOW); or board.selectField(id);
+
+    public void setOpponentsSelection(String strId){
+        board.selectPiece(Integer.parseInt(strId));
     }
-    public void replicateOpponentMove(String move){
+
+    public void makeOpponentsMove(String move, boolean isFinal){
         String[] s=move.split(" ");
-        if(s.length==2){
-            int startField=Integer.parseInt(s[0].trim());
-            int endField=Integer.parseInt(s[1].trim());
-        }else throw new IllegalArgumentException("bad move");
-        int i1=getI(startField);
-        int j1=getJ(startField);
-        int i2=getI(endField);
-        int j2=getJ(endField);
-        boolean pawn=board[i1][j1].isPawn();
-        board[i1][j1].removePiece();
-        if((i2-i1)!=1||(i2-i1)!=-1){
-            i lost my train of thought here but the point is if its a jump, remove piece over witch the jump is made else just move the piece to the [i2][j2]
-            board[][].removePiece();
-            if(pawn){
-                board[i2][j2].setPawn();
-            }else board[i2][j2].setQueen();
-        }else{
-            board[i1][j1].removePiece();
-            if(pawn){
-                board[i2][j2].setPawn();
-            }else board[i2][j2].setQueen();
+        if(s.length <= 3){
+            int startField = Integer.parseInt(s[0].trim());
+            int endField = Integer.parseInt(s[1].trim());
+            int capturedField = -1;
+            if (s.length == 3) {
+                capturedField = Integer.parseInt(s[2].trim());
+            }
+            board.movePiece(startField, endField, capturedField);
+        }
+        else {
+            throw new IllegalArgumentException("Illegal move");
+        }
+
+        if (isFinal) {
+            board.setMyMove(true);
         }
     }
-    public void opponentFinalMove(String move){
-        replicateOpponentMove(move);
-        board.setMyMove(true);
-    }
-    */
 
 
     public void reportError(String msg, boolean exit, Throwable throwable) {
