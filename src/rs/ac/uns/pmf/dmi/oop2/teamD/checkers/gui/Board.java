@@ -264,7 +264,7 @@ class Board extends JPanel {
 					if (!board[i][j].isPawn() && !board[i][j].getUser().equals(me)) {
 						queenMoves.add(new Pair<>(board[x + i][y + 1], null));
 						diagLen++;
-					} else if ((board[i][j].isPawn() && !board[i][j].getUser().equals(me)) || (!board[i][j].isPawn() && ! odsboard[i][j].getUser().equals(me))) {
+					} else if ((board[i][j].isPawn() && !board[i][j].getUser().equals(me)) || (!board[i][j].isPawn() && board[i][j].getUser().equals(me))) {
 						diagLen++;
 						int ii = dx[count] * 2 + diagLen + x;
 						int jj = dy[count] + 2 + diagLen + y;
