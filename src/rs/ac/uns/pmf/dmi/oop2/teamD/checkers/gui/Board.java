@@ -118,6 +118,7 @@ class Board extends JPanel {
 				}
 			}
 		}
+		setValidFields(valid);
 	}
 	int maxlengthFrom(Field f){
 		int r=0;
