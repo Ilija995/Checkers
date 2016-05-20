@@ -9,6 +9,7 @@ import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 /**
@@ -98,8 +99,51 @@ class Board extends JPanel {
 	 * maximum number of opponents pieces can be captured starting form that piece
 	 */
 	void calculateValidFields() {
-		
+		List<Field> valid=new ArrayList<>();
+		int k=0;
+		int max=1;
+		for(int i=0;i<BOARD_SIZE;i++){
+			for(int j=0;j<BOARD_SIZE;i++){
+				if(board[i][j].getUser().equals(board.getMe())){
+					k=maxlengthFrom(board[i][j]);
+					if(k>max){
+						ListIterator<Field> li=valid.listIterator();
+						while(li.hasNext()){
+							li.remove();
+						}
+						valid.add(board[i][j]);
+					}else if(k==max){
+						valid.add(board[i][j]);
+					}
+				}
+			}
+		}
 	}
+	int maxlengthFrom(Field f){
+		int r=0;
+		int max=0;
+		int id=f.getId();
+		List<Pair<Field, Field>> moves = getValidMoves(id);
+		if(moves==null) return 0;
+		else{
+			if(moves.stream().noneMatch(p->p.second!=null)){
+				return 1;
+			}else{
+				for(Pair<Field,Field> pair: moves){
+					if(pair.second!=null){
+						r=2+maxlengthFrom(pair.second);
+						if(r>max) {
+							max = r;
+							r=0;
+						}
+						else r=0;
+					}
+				}
+			}
+		}
+		return max;
+	}
+
 
 	void sendMove(String move) {
 		try {
