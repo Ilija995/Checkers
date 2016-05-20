@@ -98,6 +98,7 @@ class Board extends JPanel {
 	 * maximum number of opponents pieces can be captured starting form that piece
 	 */
 	void calculateValidFields() {
+		
 	}
 
 	void sendMove(String move) {
