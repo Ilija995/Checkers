@@ -34,6 +34,7 @@ class Board extends JPanel {
 	private IUser me;
 	private boolean myMove;
 	private List<Field> validFields;
+	private int maxMoveLength;
 
 	Board(IUserDb userDb, CheckersWindow window) {
 		this.userDb = userDb;
@@ -93,51 +94,72 @@ class Board extends JPanel {
 		this.validFields = validFields;
 	}
 
+	int getMaxMoveLength(){ return maxMoveLength; }
+
+	void setMaxMoveLength(int m){
+		maxMoveLength=m;
+	}
 	/**
 	 * Calculates which fields are valid
 	 * A field is valid if it contains a piece of this player and
 	 * maximum number of opponents pieces can be captured starting form that piece
 	 */
 	void calculateValidFields() {
-		List<Field> valid=new ArrayList<>();
-		int k=0;
-		int max=1;
-		for(int i=0;i<BOARD_SIZE;i++){
-			for(int j=0;j<BOARD_SIZE;i++){
-				if(board[i][j].getUser().equals(board.getMe())){
-					k=maxlengthFrom(board[i][j]);
-					if(k>max){
-						ListIterator<Field> li=valid.listIterator();
-						while(li.hasNext()){
-							li.remove();
+		List<Field> valid = getValidFields();
+		int max = 1;
+		/*if(valid == null) max = 1;
+			else{
+			Field f=valid.get(0);
+			max=maxLengthFrom(f);
+		}*/
+		int thisFieldMax = 0;
+		for(int i = 0;i < BOARD_SIZE;i++){
+			for(int j = 0;j < BOARD_SIZE;j++){
+				if(board[i][j].getUser() != null){
+					if(board[i][j].getUser().equals(getMe())){
+						thisFieldMax = maxLengthFrom(board[i][j]);
+						if(thisFieldMax > max){
+							ListIterator<Field> li = valid.listIterator();
+							while(li.hasNext()){
+								li.remove();
+							}
+							valid.add(board[i][j]);
+						}else if(thisFieldMax == max){
+							valid.add(board[i][j]);
 						}
-						valid.add(board[i][j]);
-					}else if(k==max){
-						valid.add(board[i][j]);
 					}
-				}
+				} else continue;
 			}
 		}
 		setValidFields(valid);
+		Field f=valid.get(0);
+		int totalMax = maxLengthFrom(f);
+		setMaxMoveLength(totalMax);
+
 	}
-	int maxlengthFrom(Field f){
-		int r=0;
-		int max=0;
-		int id=f.getId();
+	int maxLengthFrom(Field f){
+		int currentLength = 0;
+		int max = 0;
+		int id = f.getId();
 		List<Pair<Field, Field>> moves = getValidMoves(id);
-		if(moves==null) return 0;
+		if(moves == null || moves.size() == 0) return 0;
 		else{
-			if(moves.stream().noneMatch(p->p.second!=null)){
+			if(moves.stream().noneMatch(p -> p.second != null)){
 				return 1;
 			}else{
 				for(Pair<Field,Field> pair: moves){
-					if(pair.second!=null){
-						r=2+maxlengthFrom(pair.second);
-						if(r>max) {
-							max = r;
-							r=0;
+					if(pair.second != null){
+						Field eaten=pair.second;
+						int idEaten=eaten.getId();
+						Pair<Integer,Integer> coordinatesEaten = Field.getCoordinates(idEaten);
+						IUser userEaten = eaten.getUser();
+						boolean isPawnEaten = eaten.isPawn();
+						eaten.removePiece();
+						currentLength = 2 + maxLengthFrom(pair.first);
+						if(currentLength > max) {
+							max = currentLength;
 						}
-						else r=0;
+						board[coordinatesEaten.first][coordinatesEaten.second].setPiece(userEaten,isPawnEaten);
 					}
 				}
 			}

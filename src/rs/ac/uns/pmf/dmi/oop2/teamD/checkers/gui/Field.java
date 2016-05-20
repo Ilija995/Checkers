@@ -94,7 +94,8 @@ class Field extends JPanel {
 	 * Selects filed if this piece can take most of the opponents pieces
 	 */
 	private boolean trySelectField() {
-		if(user != null && user.equals(board.getMe())/* && board.getValidFields().stream().anyMatch(f -> f.id == id)*/){
+		/*i assume this next comment can be integrated into that if*/
+		if(user != null && user.equals(board.getMe()) /*&& board.getValidFields().stream().anyMatch(f -> f.id == id)*/){
 			board.setSelectedField(this);
 			return true;
 		}else
@@ -102,8 +103,10 @@ class Field extends JPanel {
 	}
 
 	private boolean tryMakeMove() {
-		List<Pair<Field, Field>> moves = board.getValidMoves(board.getSelectedField().id);
+		/*board.calculateValidFields();
+		 do i need to put in the following if : moves.stream().filter(e->board.maxLengthFrom(e.first)==board.getMaxMoveLength())  */
 
+		List<Pair<Field, Field>> moves = board.getValidMoves(board.getSelectedField().id);
 		// if possible, make valid move
 		if (moves != null && moves.stream().anyMatch(pair -> pair.first.id == id)) {
 			setPiece(board.getSelectedField().user, board.getSelectedField().pawn);
