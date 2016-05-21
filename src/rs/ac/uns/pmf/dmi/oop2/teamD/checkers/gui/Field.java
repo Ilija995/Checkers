@@ -70,8 +70,7 @@ class Field extends JPanel {
 						System.out.printf("-> Field %d selected\n", id);
 						board.sendMove("select " + id);
 					}
-				}
-				else {
+				} else {
 					Field selected = board.getSelectedField();
 					if (tryMakeMove()) {
 						if (canContinueMove) {
@@ -81,15 +80,14 @@ class Field extends JPanel {
 							board.setValidFields(newValidPieces);
 
 							board.sendMove("move " + selected.id + " " + id + " " + capturedId);
-						}
-						else {
+						} else {
 							tryPromote();
 							board.sendMove("final " + selected.id + " " + id + " " + capturedId);
 							board.setMyMove(false);
 						}
 					}
 				}
-			}
+			  }
 		});
 	}
 
@@ -240,6 +238,23 @@ class Field extends JPanel {
 		}
 		else{
 			setSelectOrangeQueen();
+		}
+	}
+
+	void deselect(){
+		if(board.getSelectedField().equals(this)) {
+			if(isPawn() && isBlue()){
+				setBluePawn();
+			}
+			else if(isPawn() && !isBlue()){
+				setOrangePawn();
+			}
+			else if(!isPawn() && isBlue()){
+				setBlueQueen();
+			}
+			else{
+				setOrangeQueen();
+			}
 		}
 	}
 
