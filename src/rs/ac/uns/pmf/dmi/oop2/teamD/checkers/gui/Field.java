@@ -79,6 +79,7 @@ class Field extends JPanel {
 							List<Field> newValidPieces = new ArrayList<>();
 							newValidPieces.add(Field.this);
 							board.setValidFields(newValidPieces);
+							board.setMaxMoveLength(board.getMaxMoveLength() - 2);
 
 							board.sendMove("move " + selected.id + " " + id + " " + capturedId);
 						}
@@ -98,7 +99,7 @@ class Field extends JPanel {
 	 */
 	private boolean trySelectField() {
 		/*i assume this next comment can be integrated into that if*/
-		if(user != null && user.equals(board.getMe()) /*&& board.getValidFields().stream().anyMatch(f -> f.id == id)*/){
+		if(user != null && user.equals(board.getMe()) && board.getValidFields().stream().anyMatch(f -> f.id == id)){
 			board.setSelectedField(this);
 			return true;
 		}else
@@ -106,28 +107,64 @@ class Field extends JPanel {
 	}
 
 	private boolean tryMakeMove() {
-		/*board.calculateValidFields();
-		 do i need to put in the following if : moves.stream().filter(e->board.maxLengthFrom(e.first)==board.getMaxMoveLength())  */
+		//board.calculateValidFields();
 
 		List<Pair<Field, Field>> moves = board.getValidMoves(board.getSelectedField().id);
 		// if possible, make valid move
 		if (moves != null && moves.stream().anyMatch(pair -> pair.first.id == id)) {
-			setPiece(board.getSelectedField().user, board.getSelectedField().pawn);
+			/*setPiece(board.getSelectedField().user, board.getSelectedField().pawn);
 			board.getSelectedField().removePiece();
-			board.setSelectedField(null);
+			board.setSelectedField(null);*/
 
 			// Remove captured piece
 			Field captured = moves.stream().filter(pair -> pair.first.id == id).findFirst().get().second;
 			if (captured != null) {
+
 				capturedId = captured.id;
+				IUser capturedUser = captured.getUser();
+				boolean capturedIsPawn = captured.isPawn();
 				captured.removePiece();
 
-				List<Pair<Field, Field>> nextMoves = board.getValidMoves(id);
-				canContinueMove = nextMoves != null && nextMoves.size() > 0;
+				Field from=board.getSelectedField();
+				Pair<Integer,Integer> coordinatesFrom = Field.getCoordinates(from.getId());
+				IUser userFrom = from.getUser();
+				boolean isPawnFrom = from.isPawn();
+				from.removePiece();
+
+				this.setPiece(userFrom, isPawnFrom);
+
+				int maxFromThis = board.maxLengthFrom(this);
+
+				if((board.getMaxMoveLength() - 2 == maxFromThis) && maxFromThis != 0){
+					canContinueMove = true;
+					//board.setSelectedField(this);
+				}
+				else if((board.getMaxMoveLength() - 2 == maxFromThis) && maxFromThis == 0){
+					canContinueMove=false;
+				}
+				else {
+					this.removePiece();
+					captured.setPiece(capturedUser,capturedIsPawn);
+					from.setPiece(userFrom,isPawnFrom);
+					return false;
+				}
+
+
+				/*List<Pair<Field, Field>> nextMoves = board.getValidMoves(id);
+				canContinueMove = nextMoves != null && nextMoves.size() > 0;*/
+			}
+			else if(captured == null && board.getMaxMoveLength() == 1) {
+				capturedId = -1;
+				canContinueMove = false;
+				setPiece(board.getSelectedField().user, board.getSelectedField().pawn);
+				board.getSelectedField().removePiece();
+				board.setSelectedField(null);
+				return true;
 			}
 			else {
 				capturedId = -1;
 				canContinueMove = false;
+				return false;
 			}
 
 			if (canContinueMove) {
