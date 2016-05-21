@@ -161,6 +161,8 @@ class Board extends JPanel {
 		System.out.println(totalMax);
 
 	}
+	/*this method returns length 1 longer then it should have if there have been jumps and after the last one there is a valid field left
+	* ex: if a figure can make only 2 jumps it should return 4 but if there is a field on witch the figure can go after it finishes the second jump it will return 5 */
 	int maxLengthFrom(Field f){
 		int currentLength = 0;
 		int max = 0;
