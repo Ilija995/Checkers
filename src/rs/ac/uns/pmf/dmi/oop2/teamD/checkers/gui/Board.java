@@ -70,6 +70,22 @@ class Board extends JPanel {
 		return orangeQueen;
 	}
 
+	Icon getSelectBlue(){
+		return selectBlue;
+	}
+
+	Icon getSelectOrange(){
+		return selectOrange;
+	}
+
+	Icon getSelectBlueQueen(){
+		return selectBlueQueen;
+	}
+
+	Icon getSelectOrangeQueen(){
+		return selectOrangeQueen;
+	}
+
 	IUser getMe() {
 		return me;
 	}

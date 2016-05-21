@@ -100,6 +100,7 @@ class Field extends JPanel {
 		/*i assume this next comment can be integrated into that if*/
 		if(user != null && user.equals(board.getMe()) /*&& board.getValidFields().stream().anyMatch(f -> f.id == id)*/){
 			board.setSelectedField(this);
+			select();
 			return true;
 		}else
 			return false;
@@ -132,6 +133,7 @@ class Field extends JPanel {
 
 			if (canContinueMove) {
 				board.setSelectedField(Field.this);
+				select();
 			}
 			return true;
 		}
@@ -208,6 +210,37 @@ class Field extends JPanel {
 	private void setOrangeQueen() {
 		pawn = false;
 		label.setIcon(board.getOrangeQueen());
+	}
+
+	private void setSelectBlue(){
+		label.setIcon(board.getSelectBlue());
+	}
+
+	private void setSelectOrange(){
+		label.setIcon(board.getSelectOrange());
+	}
+
+	private void setSelectBlueQueen(){
+		label.setIcon(board.getSelectBlueQueen());
+	}
+
+	private void setSelectOrangeQueen(){
+		label.setIcon(board.getSelectOrangeQueen());
+	}
+
+	void select(){
+		if(isPawn() && isBlue()){
+			setSelectBlue();
+		}
+		else if(isPawn() && !isBlue()){
+			setSelectOrange();
+		}
+		else if(!isPawn() && isBlue()){
+			setSelectBlueQueen();
+		}
+		else{
+			setSelectOrangeQueen();
+		}
 	}
 
 	void removePiece(){
