@@ -28,6 +28,10 @@ class Board extends JPanel {
 	private Icon orangePawn;
 	private Icon blueQueen;
 	private Icon orangeQueen;
+	private Icon selectBlue;
+	private Icon selectOrange;
+	private Icon selectBlueQueen;
+	private Icon selectOrangeQueen;
 	private IUserDb userDb;
 	private Field selectedField;
 	private boolean isBlue;
@@ -42,8 +46,12 @@ class Board extends JPanel {
 
 		bluePawn = new ImageIcon("res\\blue.png");
 		orangePawn = new ImageIcon("res\\orange.png");
-		blueQueen = new ImageIcon("res\\blueQ.png");
+		blueQueen = new ImageIcon("res\\blueQueen.png");
 		orangeQueen = new ImageIcon("res\\orangeQ.png");
+		selectBlue = new ImageIcon("res\\selectBlue.png");
+		selectOrange = new ImageIcon("res\\selectOrange.png");
+		selectBlueQueen = new ImageIcon("res\\selectBlueQueen.png");
+		selectOrangeQueen = new ImageIcon("res\\selectOrangeQueen.png");
 	}
 
 	Icon getBluePawn() {

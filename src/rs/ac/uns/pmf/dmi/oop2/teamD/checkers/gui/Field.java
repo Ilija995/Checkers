@@ -53,6 +53,9 @@ class Field extends JPanel {
 		this.board = board;
 		this.id = id;
 		setBackground(color);
+		setLayout(new GridBagLayout());
+		label.setHorizontalAlignment(JLabel.CENTER);
+		label.setVerticalAlignment(JLabel.CENTER);
 		add(label);
 		setPiece(user, pawn);
 

@@ -46,6 +46,7 @@ public class CheckersWindow extends JFrame {
                 }
             }
         });
+
     }
 
     private void showLoginScreen() {
@@ -291,6 +292,7 @@ public class CheckersWindow extends JFrame {
         CheckersWindow chw = new CheckersWindow();
         chw.setDefaultCloseOperation(EXIT_ON_CLOSE);
         chw.setSize(500, 500);
+        //chw.setResizable(false);
         chw.setTitle("Checkers");
         chw.setVisible(true);
     }
