@@ -4,6 +4,7 @@ import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.RegistryManager;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.server.IUserDb;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.user.IUser;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.user.User;
+import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.utility.Pair;
 
 import javax.swing.*;
 import java.awt.*;
@@ -162,6 +163,7 @@ public class CheckersWindow extends JFrame {
         }
         else {
             board.init(me, secondPlayer, true);
+            board.calculateValidFields();
             board.setMyMove(true);
         }
 
@@ -262,6 +264,7 @@ public class CheckersWindow extends JFrame {
         }
 
         if (isFinal) {
+            board.calculateValidFields();
             board.setMyMove(true);
         }
     }

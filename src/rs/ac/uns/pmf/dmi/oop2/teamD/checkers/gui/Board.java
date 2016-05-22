@@ -129,13 +129,8 @@ class Board extends JPanel {
 	 * maximum number of opponents pieces can be captured starting form that piece
 	 */
 	void calculateValidFields() {
-		List<Field> valid = getValidFields();
+		List<Field> valid = new ArrayList<>();
 		int max = 1;
-		/*if(valid == null) max = 1;
-			else{
-			Field f=valid.get(0);
-			max=maxLengthFrom(f);
-		}*/
 		int thisFieldMax = 0;
 		for(int i = 0;i < BOARD_SIZE;i++){
 			for(int j = 0;j < BOARD_SIZE;j++){
@@ -143,14 +138,15 @@ class Board extends JPanel {
 					if(board[i][j].getUser().equals(getMe())){
 						thisFieldMax = maxLengthFrom(board[i][j]);
 						if(thisFieldMax > max){
-							ListIterator<Field> li = valid.listIterator();
+							/*ListIterator<Field> li = valid.listIterator();
 							while(li.hasNext()){
 								li.remove();
-							}
+							}*/
+							valid=new ArrayList<>();
 							valid.add(board[i][j]);
 						}else if(thisFieldMax == max){
 							valid.add(board[i][j]);
-						}
+						}else continue;
 					}
 				} else continue;
 			}
@@ -159,8 +155,14 @@ class Board extends JPanel {
 		Field f=valid.get(0);
 		int totalMax = maxLengthFrom(f);
 		setMaxMoveLength(totalMax);
+		for(Field t:valid){
+			System.out.println(t.getId());
+		}
+		System.out.println(totalMax);
 
 	}
+	/*this method returns length 1 longer then it should have if there have been jumps and after the last one there is a valid field left
+	* ex: if a figure can make only 2 jumps it should return 4 but if there is a field on witch the figure can go after it finishes the second jump it will return 5 */
 	int maxLengthFrom(Field f){
 		int currentLength = 0;
 		int max = 0;
@@ -173,17 +175,29 @@ class Board extends JPanel {
 			}else{
 				for(Pair<Field,Field> pair: moves){
 					if(pair.second != null){
+
 						Field eaten=pair.second;
 						int idEaten=eaten.getId();
 						Pair<Integer,Integer> coordinatesEaten = Field.getCoordinates(idEaten);
 						IUser userEaten = eaten.getUser();
 						boolean isPawnEaten = eaten.isPawn();
 						eaten.removePiece();
+
+						Pair<Integer,Integer> coordinatesFrom = Field.getCoordinates(id);
+						IUser userFrom = f.getUser();
+						boolean isPawnFrom = f.isPawn();
+						f.removePiece();
+
+						Pair<Integer,Integer> coordinatesTo = Field.getCoordinates(pair.first.getId());
+						pair.first.setPiece(userFrom, isPawnFrom);
+
 						currentLength = 2 + maxLengthFrom(pair.first);
 						if(currentLength > max) {
 							max = currentLength;
 						}
-						board[coordinatesEaten.first][coordinatesEaten.second].setPiece(userEaten,isPawnEaten);
+						board[coordinatesTo.first][coordinatesTo.second].removePiece();
+						board[coordinatesEaten.first][coordinatesEaten.second].setPiece(userEaten, isPawnEaten);
+						board[coordinatesFrom.first][coordinatesFrom.second].setPiece(userFrom, isPawnFrom);
 					}
 				}
 			}
