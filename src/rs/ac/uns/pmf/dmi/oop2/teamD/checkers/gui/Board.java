@@ -138,12 +138,9 @@ class Board extends JPanel {
 					if(board[i][j].getUser().equals(getMe())){
 						thisFieldMax = maxLengthFrom(board[i][j]);
 						if(thisFieldMax > max){
-							/*ListIterator<Field> li = valid.listIterator();
-							while(li.hasNext()){
-								li.remove();
-							}*/
 							valid=new ArrayList<>();
 							valid.add(board[i][j]);
+							max = thisFieldMax;
 						}else if(thisFieldMax == max){
 							valid.add(board[i][j]);
 						}else continue;
