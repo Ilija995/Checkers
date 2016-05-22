@@ -138,7 +138,7 @@ class Field extends JPanel {
 				this.setPiece(userFrom, isPawnFrom);
 
 				int maxFromThis = board.maxLengthFrom(this);
-
+				/*in regard to moving after a jump :maybe here !=0 && !=1 and then in the next if == 0 || == 1*/
 				if((board.getMaxMoveLength() - 2 == maxFromThis) && maxFromThis != 0){
 					canContinueMove = true;
 					//board.setSelectedField(this);
