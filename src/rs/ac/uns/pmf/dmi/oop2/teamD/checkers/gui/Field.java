@@ -62,31 +62,36 @@ class Field extends JPanel {
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (!board.isMyMove())
-					return;
+				if(e.getClickCount()%2 == 1) {
+					if (!board.isMyMove())
+						return;
 
-				if (board.getSelectedField() == null) {
-					if (trySelectField()) {
-						System.out.printf("-> Field %d selected\n", id);
-						board.sendMove("select " + id);
-					}
-				} else {
-					Field selected = board.getSelectedField();
-					if (tryMakeMove()) {
-						if (canContinueMove) {
-							// Force player to move this piece next time
-							List<Field> newValidPieces = new ArrayList<>();
-							newValidPieces.add(Field.this);
-							board.setValidFields(newValidPieces);
-							board.setMaxMoveLength(board.getMaxMoveLength() - 2);
+					if (board.getSelectedField() == null) {
+						if (trySelectField()) {
+							System.out.printf("-> Field %d selected\n", id);
+							board.sendMove("select " + id);
+						}
+					} else {
+						Field selected = board.getSelectedField();
+						if (tryMakeMove()) {
+							if (canContinueMove) {
+								// Force player to move this piece next time
+								List<Field> newValidPieces = new ArrayList<>();
+								newValidPieces.add(Field.this);
+								board.setValidFields(newValidPieces);
+								board.setMaxMoveLength(board.getMaxMoveLength() - 2);
 
-							board.sendMove("move " + selected.id + " " + id + " " + capturedId);
-						} else {
-							tryPromote();
-							board.sendMove("final " + selected.id + " " + id + " " + capturedId);
-							board.setMyMove(false);
+								board.sendMove("move " + selected.id + " " + id + " " + capturedId);
+							} else {
+								tryPromote();
+								board.sendMove("final " + selected.id + " " + id + " " + capturedId);
+								board.setMyMove(false);
+							}
 						}
 					}
+				}
+				else if(e.getClickCount()%2 == 0 && board.getSelectedField() != null){
+					deselect();
 				}
 			  }
 		});
