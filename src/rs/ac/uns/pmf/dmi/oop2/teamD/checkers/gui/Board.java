@@ -47,7 +47,7 @@ class Board extends JPanel {
 		bluePawn = new ImageIcon("res\\blue.png");
 		orangePawn = new ImageIcon("res\\orange.png");
 		blueQueen = new ImageIcon("res\\blueQueen.png");
-		orangeQueen = new ImageIcon("res\\orangeQ.png");
+		orangeQueen = new ImageIcon("res\\orangeQueen.png");
 		selectBlue = new ImageIcon("res\\selectBlue.png");
 		selectOrange = new ImageIcon("res\\selectOrange.png");
 		selectBlueQueen = new ImageIcon("res\\selectBlueQueen.png");
