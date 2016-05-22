@@ -59,7 +59,7 @@ public class UserDb extends UnicastRemoteObject implements IUserDb {
        for(IUser t:users){
             if(!t.equals(sender)){
                 System.out.printf("User %s sent \"%s\"\n", sender.getName(), message);
-                t.onOpponentMove(sender,message);
+                t.onOpponentMove(sender, message);
             }
         }
     }

@@ -45,7 +45,7 @@ class Field extends JPanel {
 	 */
 	public static Pair<Integer, Integer> getCoordinates(int id) {
 		return new Pair<>((id - 1) / (Board.BOARD_SIZE / 2),
-				((id - 1) % (Board.BOARD_SIZE / 2)) * 2 + (((id - 1) % Board.BOARD_SIZE <= (Board.BOARD_SIZE / 2)) ? 1 : 0)
+				((id - 1) % (Board.BOARD_SIZE / 2)) * 2 + (((id - 1) % Board.BOARD_SIZE < (Board.BOARD_SIZE / 2)) ? 1 : 0)
 				);
 	}
 
@@ -62,38 +62,33 @@ class Field extends JPanel {
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(e.getClickCount()%2 == 1) {
-					if (!board.isMyMove())
-						return;
+				if (!board.isMyMove())
+					return;
 
-					if (board.getSelectedField() == null) {
-						if (trySelectField()) {
-							System.out.printf("-> Field %d selected\n", id);
-							board.sendMove("select " + id);
-						}
-					} else {
-						Field selected = board.getSelectedField();
-						if (tryMakeMove()) {
-							if (canContinueMove) {
-								// Force player to move this piece next time
-								List<Field> newValidPieces = new ArrayList<>();
-								newValidPieces.add(Field.this);
-								board.setValidFields(newValidPieces);
-								board.setMaxMoveLength(board.getMaxMoveLength() - 2);
+				if (board.getSelectedField() == null) {
+					if (trySelectField()) {
+						System.out.printf("-> Field %d selected\n", id);
+						board.sendMove("select " + id);
+					}
+				} else {
+					Field selected = board.getSelectedField();
+					if (tryMakeMove()) {
+						if (canContinueMove) {
+							// Force player to move this piece next time
+							List<Field> newValidPieces = new ArrayList<>();
+							newValidPieces.add(Field.this);
+							board.setValidFields(newValidPieces);
+							board.setMaxMoveLength(board.getMaxMoveLength() - 2);
 
-								board.sendMove("move " + selected.id + " " + id + " " + capturedId);
-							} else {
-								tryPromote();
-								board.sendMove("final " + selected.id + " " + id + " " + capturedId);
-								board.setMyMove(false);
-							}
+							board.sendMove("move " + selected.id + " " + id + " " + capturedId);
+						} else {
+							tryPromote();
+							board.sendMove("final " + selected.id + " " + id + " " + capturedId);
+							board.setMyMove(false);
 						}
 					}
 				}
-				else if(e.getClickCount()%2 == 0 && board.getSelectedField() != null){
-					deselect();
-				}
-			  }
+			}
 		});
 	}
 
@@ -104,7 +99,6 @@ class Field extends JPanel {
 		/*i assume this next comment can be integrated into that if*/
 		if(user != null && user.equals(board.getMe()) && board.getValidFields().stream().anyMatch(f -> f.id == id)){
 			board.setSelectedField(this);
-			select();
 			return true;
 		}else
 			return false;
@@ -143,13 +137,14 @@ class Field extends JPanel {
 					canContinueMove = true;
 					//board.setSelectedField(this);
 				}
-				else if((board.getMaxMoveLength() - 2 == maxFromThis) && maxFromThis == 0){
+				else if(board.getMaxMoveLength() - 2 <= maxFromThis){
 					canContinueMove=false;
 				}
 				else {
 					this.removePiece();
 					captured.setPiece(capturedUser,capturedIsPawn);
 					from.setPiece(userFrom,isPawnFrom);
+					from.select();
 					return false;
 				}
 
@@ -157,12 +152,13 @@ class Field extends JPanel {
 				/*List<Pair<Field, Field>> nextMoves = board.getValidMoves(id);
 				canContinueMove = nextMoves != null && nextMoves.size() > 0;*/
 			}
-			else if(captured == null && board.getMaxMoveLength() == 1) {
+			else if(board.getMaxMoveLength() == 1) {
 				capturedId = -1;
 				canContinueMove = false;
 				setPiece(board.getSelectedField().user, board.getSelectedField().pawn);
-				board.getSelectedField().removePiece();
+				Field selected = board.getSelectedField();
 				board.setSelectedField(null);
+				selected.removePiece();
 				return true;
 			}
 			else {
@@ -173,7 +169,6 @@ class Field extends JPanel {
 
 			if (canContinueMove) {
 				board.setSelectedField(Field.this);
-				select();
 			}
 			return true;
 		}
@@ -269,22 +264,24 @@ class Field extends JPanel {
 	}
 
 	void select(){
-		if(isPawn() && isBlue()){
-			setSelectBlue();
-		}
-		else if(isPawn() && !isBlue()){
-			setSelectOrange();
-		}
-		else if(!isPawn() && isBlue()){
-			setSelectBlueQueen();
-		}
-		else{
-			setSelectOrangeQueen();
+		if (user != null) {
+			if(isPawn() && isBlue()){
+				setSelectBlue();
+			}
+			else if(isPawn() && !isBlue()){
+				setSelectOrange();
+			}
+			else if(!isPawn() && isBlue()){
+				setSelectBlueQueen();
+			}
+			else{
+				setSelectOrangeQueen();
+			}
 		}
 	}
 
 	void deselect(){
-		if(board.getSelectedField().equals(this)) {
+		if(user != null) {
 			if(isPawn() && isBlue()){
 				setBluePawn();
 			}

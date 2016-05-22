@@ -42,6 +42,8 @@ public class User extends UnicastRemoteObject implements IUser {
             case "select":case "move":case "final":
                 EventQueue.invokeLater(() -> wnd.onOpponentMove(move));
                 break;
+            case "lost":
+                EventQueue.invokeLater(() -> wnd.onOpponentLoss());
             default:
                 throw new IllegalArgumentException("Invalid move string");
         }

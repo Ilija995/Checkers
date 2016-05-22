@@ -218,7 +218,7 @@ public class CheckersWindow extends JFrame {
             reportError("Couldn't remove player", true, re);
         }
         finally {
-            dispose();
+            dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         }
     }
 
@@ -244,6 +244,23 @@ public class CheckersWindow extends JFrame {
         }
     }
 
+	/**
+     * You either captured all of the opponents pieces, or he/she cannot make a move,
+     * thus you won!
+     */
+    public void onOpponentLoss() {
+        try {
+            JOptionPane.showMessageDialog(this, "Your opponent cannot make a move, you win!" + "\nThe game will now exit.");
+            userDb.remove(me);
+        }
+        catch (RemoteException ex) {
+            reportError("Cannot remove player", true, ex);
+        }
+        finally {
+            dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+        }
+    }
+
     public void setOpponentsSelection(String strId){
         board.selectPiece(Integer.parseInt(strId));
     }
@@ -264,8 +281,22 @@ public class CheckersWindow extends JFrame {
         }
 
         if (isFinal) {
-            board.calculateValidFields();
-            board.setMyMove(true);
+            if (board.calculateValidFields()) {
+                board.setMyMove(true);
+            }
+            else {
+                try {
+                    userDb.send(me, "lost");
+                    userDb.remove(me);
+                    JOptionPane.showMessageDialog(this, "You cannot make any move, you lost!" + "\nThe game will now exit.");
+                }
+                catch (RemoteException ex) {
+                    reportError("Cannot send message or remove player", true, ex);
+                }
+                finally {
+                    dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+                }
+            }
         }
     }
 
