@@ -187,8 +187,11 @@ class Board extends JPanel {
 
 						Pair<Integer,Integer> coordinatesTo = Field.getCoordinates(pair.first.getId());
 						pair.first.setPiece(userFrom, isPawnFrom);
-
-						currentLength = 2 + maxLengthFrom(pair.first);
+						if(maxLengthFrom(pair.first) == 1) {
+							currentLength = 2;
+						} else {
+							currentLength = 2 + maxLengthFrom(pair.first);
+						}
 						if(currentLength > max) {
 							max = currentLength;
 						}
