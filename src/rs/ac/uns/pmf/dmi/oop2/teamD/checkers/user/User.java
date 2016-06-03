@@ -18,8 +18,8 @@ public class User extends UnicastRemoteObject implements IUser {
 
     public User(CheckersWindow wnd,String name,String host) throws RemoteException {
         this.wnd = wnd;
-        this.name=name;
-        this.host=host;
+        this.name = name;
+        this.host = host;
     }
 
 
@@ -53,35 +53,4 @@ public class User extends UnicastRemoteObject implements IUser {
     public void onOpponentConnect(IUser user) throws RemoteException {
         EventQueue.invokeLater(() -> wnd.initMain(user));
     }
-    /*
-    @Override
-    public int hashCode() throws RemoteException {
-        final int prime = 31;
-        int ret = 1;
-        ret = prime * ret + getHost().hashCode();
-        ret = prime * ret + getName().hashCode();
-        return ret;
-    }
-
-    @Override
-    public boolean equals(Object o) throws RemoteException {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        IUser other = (IUser) o;
-        if (!getHost().equals(other.getHost())) {
-            return false;
-        }
-        if (!getName().equals(other.getName())) {
-            return false;
-        }
-        return true;
-    }
-    */
 }

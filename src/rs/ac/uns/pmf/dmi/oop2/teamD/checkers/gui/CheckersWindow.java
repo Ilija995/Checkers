@@ -4,7 +4,6 @@ import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.RegistryManager;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.server.IUserDb;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.user.IUser;
 import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.user.User;
-import rs.ac.uns.pmf.dmi.oop2.teamD.checkers.utility.Pair;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,10 +55,10 @@ public class CheckersWindow extends JFrame {
         setLayout(new BorderLayout());
         JPanel pnlLoginScreen = new JPanel();
         JTextField txtUserName = new JTextField(30);
-        JLabel lblUserName = new JLabel("Enter your name: ");
+        JLabel lblUserName = new JLabel("Username: ");
         JPanel pnlHost = new JPanel();
         JTextField txtHostEntry = new JTextField(30);
-        JLabel lblHostName = new JLabel("Host of the RMI registry holding the User DB?");
+        JLabel lblHostName = new JLabel("Host: ");
 
         JButton btnLogIn = new JButton("LogIn");
 
@@ -227,7 +226,6 @@ public class CheckersWindow extends JFrame {
      * @param move
      */
     public void onOpponentMove(String move) {
-        // TODO: Implement this
         switch(move.substring(0,move.indexOf(' '))){
             case "select":
                 setOpponentsSelection(move.substring(move.indexOf(' ') + 1));

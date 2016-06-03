@@ -97,11 +97,12 @@ class Field extends JPanel {
 	 */
 	private boolean trySelectField() {
 		/*i assume this next comment can be integrated into that if*/
-		if(user != null && user.equals(board.getMe()) && board.getValidFields().stream().anyMatch(f -> f.id == id)){
+		if(user != null && user.equals(board.getMe()) && board.getValidFields().stream().anyMatch(f -> f.id == id)) {
 			board.setSelectedField(this);
 			return true;
-		}else
-			return false;
+		}
+
+		return false;
 	}
 
 	private boolean tryMakeMove() {
@@ -123,7 +124,7 @@ class Field extends JPanel {
 				boolean capturedIsPawn = captured.isPawn();
 				captured.removePiece();
 
-				Field from=board.getSelectedField();
+				Field from = board.getSelectedField();
 				Pair<Integer,Integer> coordinatesFrom = Field.getCoordinates(from.getId());
 				IUser userFrom = from.getUser();
 				boolean isPawnFrom = from.isPawn();
@@ -138,7 +139,7 @@ class Field extends JPanel {
 					//board.setSelectedField(this);
 				}
 				else if(board.getMaxMoveLength() - 2 <= maxFromThis){
-					canContinueMove=false;
+					canContinueMove = false;
 				}
 				else {
 					this.removePiece();
